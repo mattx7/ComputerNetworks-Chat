@@ -31,43 +31,13 @@ public class ChatServer {
      *  server constructor that receive the port to listen to for connection as parameter
      *  in console
      */
-    public ChatServer(int port) {
+    ChatServer(int port) {
         this.port = port;
         sdf = new SimpleDateFormat("HH:mm:ss");
-        al = new ArrayList<ClientThread>();
+        al = new ArrayList<>();
     }
 
-    /*
-     *  To run as a console application just open a console window and:
-     * > java Server
-     * > java Server portNumber
-     * If the port number is not specified 1500 is used
-     */
-    public static void main(String[] args) {
-        // start server on port 1500 unless a PortNumber is specified
-        int portNumber = 1500;
-        switch (args.length) {
-            case 1:
-                try {
-                    portNumber = Integer.parseInt(args[0]);
-                } catch (Exception e) {
-                    System.out.println("Invalid port number.");
-                    System.out.println("Usage is: > java Server [portNumber]");
-                    return;
-                }
-            case 0:
-                break;
-            default:
-                System.out.println("Usage is: > java Server [portNumber]");
-                return;
-
-        }
-        // create a server object and start it
-        ChatServer server = new ChatServer(portNumber);
-        server.start();
-    }
-
-    public void start() {
+    void start() {
         keepGoing = true;
         /* create socket server and wait for connection requests */
         try {
@@ -89,8 +59,7 @@ public class ChatServer {
             // I was asked to stop
             try {
                 serverSocket.close();
-                for (int i = 0; i < al.size(); ++i) {
-                    ClientThread tc = al.get(i);
+                for (ClientThread tc : al) {
                     try {
                         tc.sInput.close();
                         tc.sOutput.close();
@@ -99,14 +68,13 @@ public class ChatServer {
                         // not much I can do
                     }
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
 
             }
         }
         // something went bad
         catch (IOException e) {
             String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
-
         }
     }
 
@@ -246,16 +214,16 @@ public class ChatServer {
             // try to close the connection
             try {
                 if (sOutput != null) sOutput.close();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             try {
                 if (sInput != null) sInput.close();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             ;
             try {
                 if (socket != null) socket.close();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
 
@@ -273,7 +241,7 @@ public class ChatServer {
                 sOutput.writeObject(msg);
             }
             // if an error occurs, do not abort just inform the user
-            catch (IOException e) {
+            catch (IOException ignored) {
             }
             return true;
         }

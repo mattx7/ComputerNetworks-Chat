@@ -1,9 +1,10 @@
 group 'chat_app'
-version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -14,4 +15,38 @@ dependencies {
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compile group: 'com.intellij', name: 'annotations', version: '9.0.4'
     compile group: 'com.google.guava', name: 'guava', version: '20.0'
+}
+
+jar {
+    baseName = 'ChatApp'
+    manifest {
+        attributes 'Main-Class': 'chat_app.MainApp'
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'chat_app.MainApp'
+    }
+    baseName = jar.baseName + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task clientJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'chat_app.clientApp'
+    }
+    baseName = 'Client'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task serverJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'chat_app.server.ServerApp'
+    }
+    baseName = 'Server'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
