@@ -1,6 +1,5 @@
-package chat_app;
+package chat_app.client;
 
-import chat_app.client.ChatClient;
 import chat_app.message.ChatMessage;
 import chat_app.message.ChatMessageType;
 
@@ -9,7 +8,7 @@ import java.util.Scanner;
 /**
  * Created by lionpierau on 18.04.17.
  */
-public class ChatApp {
+public class ClientApp {
 
     /**
      * To start the Client in console mode use one of the following command
@@ -24,7 +23,7 @@ public class ChatApp {
      * > java Client
      * is equivalent to
      * > java Client Anonymous 1500 localhost
-     * are eqquivalent
+     * are equivalent
      * <p>
      * In console mode, if an error occurs the program simply stops
      * when a GUI id used, the GUI is informed of the disconnection
@@ -46,7 +45,7 @@ public class ChatApp {
                     portNumber = Integer.parseInt(args[1]);
                 } catch (Exception e) {
                     System.out.println("Invalid port number.");
-                    System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
+                    usage();
                     return;
                 }
                 // > javac Client username
@@ -57,7 +56,7 @@ public class ChatApp {
                 break;
             // invalid number of arguments
             default:
-                System.out.println("Usage is: > java Client [username] [portNumber] {serverAddress]");
+                usage();
                 return;
         }
         // create the Client object
@@ -89,6 +88,10 @@ public class ChatApp {
         }
         // done disconnect
         client.disconnect();
+    }
+
+    public static void usage() {
+        System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
     }
 
 }

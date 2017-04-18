@@ -9,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Created by lionpierau on 18.04.17.
+ * Chat Client
  */
-public class ChatClient {
+class ChatClient {
     private static final Logger LOG = Logger.getLogger(ChatClient.class);
 
     private ObjectInputStream inputStream;
@@ -22,13 +22,13 @@ public class ChatClient {
     private String username;
     private int port;
 
-    public ChatClient(String server, String username, int port) {
+    ChatClient(String server, String username, int port) {
         this.server = server;
         this.username = username;
         this.port = port;
     }
 
-    public boolean start() {
+    boolean start() {
 
         try {
             socket = new Socket(server, port);
@@ -64,7 +64,7 @@ public class ChatClient {
     /**
      * To send message to server.
      */
-    public void sendMessage(ChatMessage msg) {
+    void sendMessage(ChatMessage msg) {
         try {
             outputStream.writeObject(msg);
         } catch (IOException e) {
@@ -72,7 +72,7 @@ public class ChatClient {
         }
     }
 
-    public void disconnect() {
+    void disconnect() {
         try {
             if (inputStream != null)
                 inputStream.close();
@@ -99,6 +99,7 @@ public class ChatClient {
             while (true) {
                 try {
                     String msg = (String) inputStream.readObject();
+                    display(msg);
                 } catch (final IOException e) {
                     LOG.error("Error:", e);
                     display("Server has closed the connection!");
