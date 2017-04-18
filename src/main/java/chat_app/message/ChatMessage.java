@@ -1,4 +1,4 @@
-package chat_app;
+package chat_app.message;
 
 import java.io.Serializable;
 
