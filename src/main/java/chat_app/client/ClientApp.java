@@ -75,15 +75,15 @@ public class ClientApp {
             String msg = scan.nextLine();
             // logout if message is LOGOUT
             if (msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new ChatMessage(ChatMessageType.Logout, ""));
+                client.sendMessage(new ChatMessage(ChatMessageType.LOGOUT, ""));
                 // break to do the disconnect
                 break;
             }
-            // message WhoIsIn
+            // message WHO_IS_IN
             else if (msg.equalsIgnoreCase("WHOISIN")) {
-                client.sendMessage(new ChatMessage(ChatMessageType.WhoIsIn, ""));
+                client.sendMessage(new ChatMessage(ChatMessageType.WHO_IS_IN, ""));
             } else {                // default to ordinary message
-                client.sendMessage(new ChatMessage(ChatMessageType.Message, msg));
+                client.sendMessage(new ChatMessage(ChatMessageType.MESSAGE, msg));
             }
         }
         // done disconnect

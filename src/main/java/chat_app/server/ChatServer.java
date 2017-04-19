@@ -156,7 +156,7 @@ public class ChatServer {
         String username;
 
         /**
-         * Message
+         * MESSAGE
          */
         ChatMessage message;
 
@@ -206,13 +206,13 @@ public class ChatServer {
                 String message = this.message.getMessage();
                 // Switch on the type of message receive
                 switch (this.message.getType()) {
-                    case Message:
+                    case MESSAGE:
                         broadcast(username + ": " + message);
                         break;
-                    case Logout:
+                    case LOGOUT:
                         keepGoing = false;
                         break;
-                    case WhoIsIn:
+                    case WHO_IS_IN:
                         writeMsg("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
                         // scan clientThreads the users connected
                         for (int i = 0; i < clientThreads.size(); ++i) {
