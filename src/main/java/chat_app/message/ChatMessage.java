@@ -3,7 +3,7 @@ package chat_app.message;
 import java.io.Serializable;
 
 /**
- * Message for ChatClient
+ * MESSAGE for ChatClient
  */
 public class ChatMessage implements Serializable {
 
