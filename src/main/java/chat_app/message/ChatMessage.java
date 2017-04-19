@@ -3,11 +3,11 @@ package chat_app.message;
 import java.io.Serializable;
 
 /**
- * MESSAGE for ChatClient
+ * Message for ChatClient
  */
 public class ChatMessage implements Serializable {
 
-    protected static final long serialVersionUID = 1112122200L;
+    protected static final long serialVersionUID = 1112122200L; // TODO Why?
 
     private ChatMessageType type;
     private String message;
@@ -16,8 +16,6 @@ public class ChatMessage implements Serializable {
         this.type = type;
         this.message = message;
     }
-
-    // ### GETTER ###
 
     public ChatMessageType getType() {
         return type;
