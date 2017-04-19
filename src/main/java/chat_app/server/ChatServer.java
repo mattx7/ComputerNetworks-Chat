@@ -138,7 +138,7 @@ public class ChatServer {
     }
 
     /**
-     * One instance of this thread will run for each client
+     * One instance of this thread will run for each client.
      */
     class ClientThread extends Thread {
         Socket socket;
@@ -165,17 +165,21 @@ public class ChatServer {
          */
         String date;
 
+        /**
+         * Constructor.
+         *
+         * @param socket not null.
+         */
         ClientThread(Socket socket) {
             id = ++uniqueId;
             this.socket = socket;
 
-			/* Creating both Data Stream */
+			// Creating Data Streams
             LOG.debug("Thread trying to create Object Input/Output Streams");
             try {
-                // create output first
                 outputStream = new ObjectOutputStream(socket.getOutputStream());
                 inputStream = new ObjectInputStream(socket.getInputStream());
-                // read the username
+
                 username = (String) inputStream.readObject();
 
             } catch (final IOException e) {
@@ -191,7 +195,7 @@ public class ChatServer {
             boolean keepGoing = true;
 
             while (keepGoing) {
-                // read a String (which is an object)
+                // get message
                 try {
                     message = (ChatMessage) inputStream.readObject();
                 } catch (final IOException e) {
@@ -202,9 +206,10 @@ public class ChatServer {
                     break;
                 }
 
-                // the message part of the ChatMessage
+                // read message TODO comments to methods
                 String message = this.message.getMessage();
-                // Switch on the type of message receive
+
+                // Type of message receive
                 switch (this.message.getType()) {
                     case MESSAGE:
                         broadcast(username + ": " + message);

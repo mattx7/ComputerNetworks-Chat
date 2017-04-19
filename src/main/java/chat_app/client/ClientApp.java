@@ -2,44 +2,41 @@ package chat_app.client;
 
 import chat_app.message.ChatMessage;
 import chat_app.message.ChatMessageType;
+import org.apache.log4j.Logger;
 
 import java.util.Scanner;
 
 /**
- * Created by lionpierau on 18.04.17.
+ * <p>
+ * To start the Client in console mode use one of the following command <br />
+ * > java Client [username] [port] [serverAddress]
+ * </p><p>
+ * <b>Defaults:</b>
+ * - portNumber is 1500 <br />
+ * - address is "localhost" <br />
+ * - username is "Anonymous"
+ * </p><p>
+ * > java Client <br />
+ * is equivalent to <br />
+ * > java Client Anonymous 1500 localhost <br />
+ * </p><p>
+ * In console mode, if an error occurs the program simply stops
+ * </p>
  */
 public class ClientApp {
+    private static final Logger LOG = Logger.getLogger(ClientApp.class);
 
     /**
-     * To start the Client in console mode use one of the following command
-     * > java Client
-     * > java Client username
-     * > java Client username portNumber
-     * > java Client username portNumber serverAddress
-     * at the console prompt
-     * If the portNumber is not specified 1500 is used
-     * If the serverAddress is not specified "localHost" is used
-     * If the username is not specified "Anonymous" is used
-     * > java Client
-     * is equivalent to
-     * > java Client Anonymous 1500 localhost
-     * are equivalent
-     * <p>
-     * In console mode, if an error occurs the program simply stops
-     * when a GUI id used, the GUI is informed of the disconnection
+     * @see ClientApp
      */
     public static void main(String[] args) {
-        // default values
         int portNumber = 1500;
-        String serverAddress = "localhost";
+        String address = "localhost";
         String userName = "Anonymous";
 
-        // depending of the number of arguments provided we fall through
         switch (args.length) {
-            // > javac Client username portNumber serverAddr
             case 3:
-                serverAddress = args[2];
-                // > javac Client username portNumber
+                address = args[2];
             case 2:
                 try {
                     portNumber = Integer.parseInt(args[1]);
@@ -48,50 +45,48 @@ public class ClientApp {
                     usage();
                     return;
                 }
-                // > javac Client username
             case 1:
                 userName = args[0];
-                // > java Client
             case 0:
                 break;
-            // invalid number of arguments
             default:
                 usage();
                 return;
         }
-        // create the Client object
-        ChatClient client = new ChatClient(serverAddress, userName, portNumber);
-        // test if we can start the connection to the Server
-        // if it failed nothing we can do
-        if (!client.start())
+        ChatClient client = new ChatClient(address, userName, portNumber);
+
+        // check for server
+        if (!client.start()) {
+            LOG.error("Can't connect to server!");
             return;
+        }
 
         // wait for messages from user
         Scanner scan = new Scanner(System.in);
-        // loop forever for message from the user
-        while (true) {
+        while (true) { // TODO replace while(true)
             System.out.print("> ");
-            // read message from user
             String msg = scan.nextLine();
-            // logout if message is LOGOUT
+
+            // LOGOUT
             if (msg.equalsIgnoreCase("LOGOUT")) {
                 client.sendMessage(new ChatMessage(ChatMessageType.LOGOUT, ""));
-                // break to do the disconnect
                 break;
             }
-            // message WHO_IS_IN
+
+            // WHO_IS_IN
             else if (msg.equalsIgnoreCase("WHOISIN")) {
                 client.sendMessage(new ChatMessage(ChatMessageType.WHO_IS_IN, ""));
-            } else {                // default to ordinary message
+            } else {
+                // DEFAULT
                 client.sendMessage(new ChatMessage(ChatMessageType.MESSAGE, msg));
             }
         }
-        // done disconnect
+
         client.disconnect();
     }
 
     public static void usage() {
-        System.out.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
+        System.out.println("Client usage: > java Client [username] [port] [address]");
     }
 
 }

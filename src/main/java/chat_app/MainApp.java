@@ -23,6 +23,8 @@ public class MainApp {
                 ServerApp.main(newArgs);
             } else if (Objects.equals(args[0], "Client")) {
                 ClientApp.main(newArgs);
+            } else {
+                usage();
             }
         } else {
             usage();
