@@ -28,14 +28,14 @@ task fatJar(type: Jar) {
     manifest {
         attributes 'Main-Class': 'chat_app.MainApp'
     }
-    baseName = jar.baseName + '-all'
+    baseName = jar.baseName
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
 
 task clientJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'chat_app.clientApp'
+        attributes 'Main-Class': 'chat_app.client.clientApp'
     }
     baseName = 'Client'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }

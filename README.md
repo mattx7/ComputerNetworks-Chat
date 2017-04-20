@@ -4,7 +4,7 @@ HAW - Rechnernetze - Chat
 ## Client
 
 Runs with:
-> java Client [username] [port] [serverAddress]
+> java -jar ChatApp.jar Client [username] [port] [serverAddress]
 
 If an error occurs the program simply stops
 
@@ -13,15 +13,15 @@ Defaults:
 - address is "localhost"
 - username is "Anonymous"
 
-> java Client
+> java -jar ChatApp.jar Client
 
 is equivalent to 
 
-> java Client Anonymous 1500 localhost 
+> java -jar ChatApp.jar Client Anonymous 1500 localhost 
 
 ## Server
 
 Runs with:
-> java Server [port]
+> java -jar ChatApp.jar Server [port]
 
 If the port is not specified, 1500 is used
