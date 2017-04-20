@@ -5,29 +5,28 @@ package chat_app.server;
  * <p>> java Server [port]</p>
  * If the port is not specified 1500 is used
  */
-public class Main {
+public class ServerMain {
 
     /**
-     * @see Main
+     * @see ServerMain
      */
     public static void main(String[] args) {
+        // default port
         int portNumber = 1500;
 
         switch (args.length) {
-            case 1:
+            case 1: // with port
                 try {
                     portNumber = Integer.parseInt(args[0]);
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     System.out.println("Invalid port number.");
-                    usage();
                     return;
                 }
-            case 0:
+            case 0: // default port
                 break;
             default:
                 usage();
                 return;
-
         }
 
         // create a server object and start it

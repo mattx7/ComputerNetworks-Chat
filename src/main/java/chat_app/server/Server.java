@@ -1,45 +1,66 @@
 package chat_app.server;
 
-import chat_app.message.Message;
+import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Chat server
  */
-public class Server {
+class Server {
     private static final Logger LOG = Logger.getLogger(Server.class);
 
     /**
-     * Unique ID for each connection TODO ?
+     * Unique ID for each connection
      */
-    private static int uniqueId;
+    private static int clientIdSequence;
 
     /**
-     * Keeps the list of the Clients.
+     * Holds the server socket.
      */
-    private ArrayList<ClientThread> clientThreads;
+    private ServerSocket serverSocket;
 
     /**
-     * Will be turned of to stop the server
+     * Holds the chat rooms.
+     */
+    @NotNull
+    private ArrayList<ChatRoom> chatRooms;
+
+    /**
+     * Holds the waiting hall.
+     */
+    private ChatRoom waitingHall;
+
+    /**
+     * Will be turned of to stop the server.
      */
     private boolean keepGoing;
 
-    private SimpleDateFormat dateFormatter;
-    private int port;
+    /**
+     * Server port.
+     */
+    @NotNull
+    private Integer port;
 
-    Server(int port) {
+
+    /**
+     * Constructor.
+     *
+     * @param port server port.
+     */
+    Server(@NotNull Integer port) {
+        Preconditions.checkNotNull(port, "port must not be null.");
+
         this.port = port;
-        dateFormatter = new SimpleDateFormat("HH:mm:ss");
-        clientThreads = new ArrayList<>();
+        chatRooms = new ArrayList<>();
+        waitingHall = new ChatRoom(this, "Waiting-Hall");
+        LOG.debug("Server created.");
     }
 
     /**
@@ -47,49 +68,34 @@ public class Server {
      */
     void start() {
         keepGoing = true;
-        /* create socket server and wait for connection requests */
+
+        // create socket server and wait for connection requests
         try {
-            // the socket used by the server
-            ServerSocket serverSocket = new ServerSocket(port);
+            // The socket used by the server
+            serverSocket = new ServerSocket(port);
 
-            // infinite loop to wait for connections
+            // Infinite loop to wait for connections
             while (keepGoing) {
-                // format message saying we are waiting
-
                 Socket socket = serverSocket.accept();    // accept connection
-                // if I was asked to stop
+                waitingHall.enterChatRoom(socket);
                 if (!keepGoing)
                     break;
-                ClientThread t = new ClientThread(socket);  // make a thread of it
-                clientThreads.add(t);                                    // save it in the ArrayList
-                t.start();
             }
-            // I was asked to stop
-            try {
-                serverSocket.close();
-                for (ClientThread tc : clientThreads) {
-                    try {
-                        tc.inputStream.close();
-                        tc.outputStream.close();
-                        tc.socket.close();
-                    } catch (final IOException ioE) {
-                        // not much I can do
-                    }
-                }
-            } catch (final Exception ignored) {
 
-            }
+            // Close all connections
+            closeAllConnections();
+
+        } catch (final IOException e) { // something went wrong
+            LOG.error("Exception on new ServerSocket", e);
         }
-        // something went bad
-        catch (final IOException e) {
-            String msg = dateFormatter.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
-        }
+
+        LOG.debug("Server started.");
     }
 
     /**
-     * Stops the server
+     * Stops the server TODO STOP() einbinden
      */
-    protected void stop() {
+    void stop() {
         keepGoing = false;
         // connect to myself as Client to exit statement
         // Socket socket = serverSocket.accept();
@@ -101,172 +107,61 @@ public class Server {
     }
 
     /**
-     * To broadcast a message to all Clients
-     */
-    private synchronized void broadcast(String message) {
-        // add HH:mm:ss and \n to the message
-        String time = dateFormatter.format(new Date());
-        String messageLf = time + " " + message + "\n";
-
-        // we loop in reverse order in case we would have to remove a Client
-        // because it has disconnected
-        for (int i = clientThreads.size(); --i >= 0; ) {
-            ClientThread ct = clientThreads.get(i);
-            // try to write to the Client if it fails remove it from the list
-            if (!ct.writeMsg(messageLf)) {
-                clientThreads.remove(i);
-
-            }
-        }
-    }
-
-    /**
-     * For a client who logoff using the LOGOUT message
+     * Creates and adds a new chat room.
      *
-     * @param id From Client.
+     * @param name Name of the room.
      */
-    synchronized void remove(int id) {
-        // scan the array list until we found the Id
-        for (int i = 0; i < clientThreads.size(); ++i) {
-            ClientThread client = clientThreads.get(i);
-            // found it
-            if (client.id == id) {
-                clientThreads.remove(i);
-                return;
-            }
-        }
+    void addRoom(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name must not be null.");
+
+        this.chatRooms.add(new ChatRoom(this, name));
     }
 
     /**
-     * One instance of this thread will run for each client.
+     * Returns room by name or null if not found.
      */
-    class ClientThread extends Thread {
-        Socket socket;
-        ObjectInputStream inputStream;
-        ObjectOutputStream outputStream;
+    @Nullable
+    ChatRoom getRoomByName(@NotNull String name) {
+        Preconditions.checkNotNull(name, "name must not be null.");
 
-        /**
-         * Unique if (easier for deconnection)
-         */
-        int id;
-
-        /**
-         * Username of the client.
-         */
-        String username;
-
-        /**
-         * MESSAGE
-         */
-        Message message;
-
-        /**
-         * Date of connection.
-         */
-        String date;
-
-        /**
-         * Constructor.
-         *
-         * @param socket not null.
-         */
-        ClientThread(Socket socket) {
-            id = ++uniqueId;
-            this.socket = socket;
-
-			// Creating Data Streams
-            LOG.debug("Thread trying to create Object Input/Output Streams");
-            try {
-                outputStream = new ObjectOutputStream(socket.getOutputStream());
-                inputStream = new ObjectInputStream(socket.getInputStream());
-
-                username = (String) inputStream.readObject();
-
-            } catch (final IOException e) {
-                LOG.error("Thread couldn't create streams", e);
-                return;
-            } catch (final ClassNotFoundException ignored) {
+        for (ChatRoom room : chatRooms) {
+            if (room.getName().equalsIgnoreCase(name)) {
+                return room;
             }
-            date = new Date().toString() + "\n";
         }
+        return null;
+    }
 
+    /**
+     * @return new client id.
+     */
+    int getClientIdFromSequence() {
+        return ++clientIdSequence;
+    }
 
-        public void run() {
-            boolean keepGoing = true;
-
-            while (keepGoing) {
-                // get message
-                try {
-                    message = (Message) inputStream.readObject();
-                } catch (final IOException e) {
-                    LOG.error("Thread couldn't read object", e);
-                    break;
-                } catch (final ClassNotFoundException e) {
-                    LOG.error("Thread couldn't read object", e);
-                    break;
-                }
-
-                // read message TODO comments to methods
-                String message = this.message.getMessage();
-
-                // Type of message receive
-                switch (this.message.getType()) {
-                    case MESSAGE:
-                        broadcast(username + ": " + message);
-                        break;
-                    case LOGOUT:
-                        keepGoing = false;
-                        break;
-                    case WHO_IS_IN:
-                        writeMsg("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
-                        // scan clientThreads the users connected
-                        for (int i = 0; i < clientThreads.size(); ++i) {
-                            ClientThread ct = clientThreads.get(i);
-                            writeMsg((i + 1) + ") " + ct.username + " since " + ct.date);
-                        }
-                        break;
+    /**
+     * Closes all client-threads and IOStreams.
+     */
+    private void closeAllConnections() {
+        LOG.debug("Close all connections...");
+        try {
+            serverSocket.close();
+            for (ChatRoom chatRoom : chatRooms) {
+                for (ConnectedClientThread clientThread : chatRoom.clientThreads) {
+                    try {
+                        clientThread.inputStream.close();
+                        clientThread.outputStream.close();
+                        clientThread.socket.close();
+                    } catch (final IOException e) {
+                        LOG.error("Exception on close Clients Threads", e);
+                    }
                 }
             }
 
-            // remove myself from the arrayList containing the list of the connected Clients
-            remove(id);
-            close();
-        }
+        } catch (final Exception ignored) {
 
-        private void close() {
-            try {
-                if (outputStream != null) outputStream.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                if (inputStream != null) inputStream.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                if (socket != null) socket.close();
-            } catch (Exception ignored) {
-            }
         }
-
-        /**
-         * Write a String to the Client output stream
-         */
-        private boolean writeMsg(String msg) {
-            // if Client is still connected send the message to it
-            if (!socket.isConnected()) {
-                close();
-                return false;
-            }
-
-            // write the message to the stream
-            try {
-                outputStream.writeObject(msg);
-            } catch (final IOException e) {
-                LOG.debug("Couldn't write message to stream", e);
-                // if an error occurs, do not abort just inform the user
-            }
-            return true;
-        }
+        LOG.debug("All connections closed!");
     }
 }
 

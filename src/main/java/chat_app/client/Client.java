@@ -1,7 +1,8 @@
 package chat_app.client;
 
-import chat_app.message.Message;
+import chat_app.message.ChatMessage;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,24 +15,47 @@ import java.net.Socket;
 class Client {
     private static final Logger LOG = Logger.getLogger(Client.class);
 
-    private ObjectInputStream inputStream;
+    ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private Socket socket;
 
-    private String server;
+    /**
+     * IP or address to the server
+     */
+    private String serverAddress;
+
+    /**
+     * Name of the user.
+     */
     private String username;
+
+    /**
+     * Holds the port.
+     */
     private int port;
 
-    Client(String server, String username, int port) {
-        this.server = server;
+    /**
+     * Constructor.
+     *
+     * @param serverAddress not null.
+     * @param username      not null.
+     * @param port          not null.
+     */
+    Client(@NotNull String serverAddress, @NotNull String username, int port) {
+        this.serverAddress = serverAddress;
         this.username = username;
         this.port = port;
     }
 
-    boolean start() {
+    /**
+     * Starts the connection to the server
+     *
+     * @return true if successful
+     */
+    boolean start() { // TODO boolean method ersetzen
 
         try {
-            socket = new Socket(server, port);
+            socket = new Socket(serverAddress, port);
         } catch (final IOException e) {
             LOG.error("Error:", e);
             return false;
@@ -47,10 +71,10 @@ class Client {
             return false;
         }
 
-        new ServerListener().start();
+        new ServerListener(this).start();
 
-        // Send our username to the server this is the only message that we
-        // will send as a String. All other messages will be Message objects
+        // Send our username to the serverAddress this is the only message that we
+        // will send as a String. All other messages will be ChatMessage objects
         try {
             outputStream.writeObject(username);
         } catch (IOException eIO) {
@@ -62,16 +86,20 @@ class Client {
     }
 
     /**
-     * To send message to server.
+     * To send message to serverAddress.
      */
-    void sendMessage(Message msg) {
+    void sendMessage(@NotNull ChatMessage msg) {
         try {
             outputStream.writeObject(msg);
+            LOG.debug(username + " has send a message");
         } catch (IOException e) {
             LOG.error("Error:", e);
         }
     }
 
+    /**
+     * Close connection and streams.
+     */
     void disconnect() {
         try {
             if (inputStream != null)
@@ -82,32 +110,13 @@ class Client {
                 socket.close();
         } catch (Exception e) {
             LOG.error("Error:", e);
-        } // not much else I can do
+        }
     }
 
     /**
      * To display in terminal
      */
-    private void display(String msg) {
+    void display(@NotNull String msg) {
         System.out.println(msg);
-    }
-
-    class ServerListener extends Thread {
-        private final Logger LOG = Logger.getLogger(ServerListener.class);
-
-        public void run() {
-            while (true) {
-                try {
-                    String msg = (String) inputStream.readObject();
-                    display(msg);
-                } catch (final IOException e) {
-                    display("Logout by server:");
-                    break;
-                } catch (final ClassNotFoundException e) {
-                    LOG.error("Error:", e);
-                    break;
-                }
-            }
-        }
     }
 }

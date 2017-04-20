@@ -1,6 +1,6 @@
 package chat_app.client;
 
-import chat_app.message.Message;
+import chat_app.message.ChatMessage;
 import chat_app.message.MessageType;
 import org.apache.log4j.Logger;
 
@@ -23,11 +23,11 @@ import java.util.Scanner;
  * In console mode, if an error occurs the program simply stops
  * </p>
  */
-public class Main {
-    private static final Logger LOG = Logger.getLogger(Main.class);
+public class ClientMain {
+    private static final Logger LOG = Logger.getLogger(ClientMain.class);
 
     /**
-     * @see Main
+     * @see ClientMain
      */
     public static void main(String[] args) {
         int portNumber = 1500;
@@ -67,23 +67,34 @@ public class Main {
             System.out.print("> ");
             String msg = scan.nextLine();
 
-            // LOGOUT
-            if (msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new Message(MessageType.LOGOUT, ""));
-                break;
+            final String[] msgInWords = msg.split(" ");
+            String command = "";
+            String nameOfRoom = "";
+            if (msgInWords.length == 2) {
+                command = (msgInWords[0]);
+                nameOfRoom = (msgInWords[1]);
             }
-            if (msg.equalsIgnoreCase("HELP")) {
+
+            if (msg.equalsIgnoreCase("LOGOUT")) {
+                client.sendMessage(new ChatMessage(MessageType.LOGOUT, ""));
+                break;
+
+            } else if (msg.equalsIgnoreCase("WHOISIN")) {
+                client.sendMessage(new ChatMessage(MessageType.WHO_IS_IN, ""));
+
+            } else if (command.equalsIgnoreCase("SWITCH")) {
+                client.sendMessage(new ChatMessage(MessageType.SWITCH_ROOM, nameOfRoom));
+
+            } else if (command.equalsIgnoreCase("CREATE")) {
+                client.sendMessage(new ChatMessage(MessageType.CREATE_ROOM, nameOfRoom));
+
+            } else  if (msg.equalsIgnoreCase("HELP")) {
                 System.out.println("" +
                         "1: LOGOUT for Logout, \n" +
                         "2: WHOISIN to see logged in clients, \n" +
                         "3: HELP to see this information \n");
-            }
-            // WHO_IS_IN
-            else if (msg.equalsIgnoreCase("WHOISIN")) {
-                client.sendMessage(new Message(MessageType.WHO_IS_IN, ""));
-            } else {
-                // DEFAULT
-                client.sendMessage(new Message(MessageType.MESSAGE, msg));
+            } else { // DEFAULT MESSAGE
+                client.sendMessage(new ChatMessage(MessageType.MESSAGE, msg));
             }
         }
 
