@@ -1,7 +1,6 @@
 package chat_app;
 
-import chat_app.client.ClientApp;
-import chat_app.server.ServerApp;
+import chat_app.server.Main;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -20,9 +19,9 @@ public class MainApp {
             final String[] newArgs = Arrays.copyOfRange(args, 1, args.length); // delete first element
 
             if (Objects.equals(args[0], "Server")) {
-                ServerApp.main(newArgs);
+                Main.main(newArgs);
             } else if (Objects.equals(args[0], "Client")) {
-                ClientApp.main(newArgs);
+                chat_app.client.Main.main(newArgs);
             } else {
                 usage();
             }
@@ -33,8 +32,8 @@ public class MainApp {
     }
 
     private static void usage() {
-        ServerApp.usage();
-        ClientApp.usage();
+        Main.usage();
+        chat_app.client.Main.usage();
     }
 
 }

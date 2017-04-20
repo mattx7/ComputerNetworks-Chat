@@ -1,6 +1,6 @@
 package chat_app.server;
 
-import chat_app.message.ChatMessage;
+import chat_app.message.Message;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -15,8 +15,8 @@ import java.util.Date;
 /**
  * Chat server
  */
-public class ChatServer {
-    private static final Logger LOG = Logger.getLogger(ChatServer.class);
+public class Server {
+    private static final Logger LOG = Logger.getLogger(Server.class);
 
     /**
      * Unique ID for each connection TODO ?
@@ -36,7 +36,7 @@ public class ChatServer {
     private SimpleDateFormat dateFormatter;
     private int port;
 
-    ChatServer(int port) {
+    Server(int port) {
         this.port = port;
         dateFormatter = new SimpleDateFormat("HH:mm:ss");
         clientThreads = new ArrayList<>();
@@ -158,7 +158,7 @@ public class ChatServer {
         /**
          * MESSAGE
          */
-        ChatMessage message;
+        Message message;
 
         /**
          * Date of connection.
@@ -197,7 +197,7 @@ public class ChatServer {
             while (keepGoing) {
                 // get message
                 try {
-                    message = (ChatMessage) inputStream.readObject();
+                    message = (Message) inputStream.readObject();
                 } catch (final IOException e) {
                     LOG.error("Thread couldn't read object", e);
                     break;

@@ -1,7 +1,7 @@
 package chat_app.client;
 
-import chat_app.message.ChatMessage;
-import chat_app.message.ChatMessageType;
+import chat_app.message.Message;
+import chat_app.message.MessageType;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;
@@ -23,11 +23,11 @@ import java.util.Scanner;
  * In console mode, if an error occurs the program simply stops
  * </p>
  */
-public class ClientApp {
-    private static final Logger LOG = Logger.getLogger(ClientApp.class);
+public class Main {
+    private static final Logger LOG = Logger.getLogger(Main.class);
 
     /**
-     * @see ClientApp
+     * @see Main
      */
     public static void main(String[] args) {
         int portNumber = 1500;
@@ -53,7 +53,7 @@ public class ClientApp {
                 usage();
                 return;
         }
-        ChatClient client = new ChatClient(address, userName, portNumber);
+        Client client = new Client(address, userName, portNumber);
 
         // check for server
         if (!client.start()) {
@@ -69,16 +69,16 @@ public class ClientApp {
 
             // LOGOUT
             if (msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new ChatMessage(ChatMessageType.LOGOUT, ""));
+                client.sendMessage(new Message(MessageType.LOGOUT, ""));
                 break;
             }
 
             // WHO_IS_IN
             else if (msg.equalsIgnoreCase("WHOISIN")) {
-                client.sendMessage(new ChatMessage(ChatMessageType.WHO_IS_IN, ""));
+                client.sendMessage(new Message(MessageType.WHO_IS_IN, ""));
             } else {
                 // DEFAULT
-                client.sendMessage(new ChatMessage(ChatMessageType.MESSAGE, msg));
+                client.sendMessage(new Message(MessageType.MESSAGE, msg));
             }
         }
 

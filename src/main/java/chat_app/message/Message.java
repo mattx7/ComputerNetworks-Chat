@@ -5,19 +5,19 @@ import java.io.Serializable;
 /**
  * Message for ChatClient
  */
-public class ChatMessage implements Serializable {
+public class Message implements Serializable {
 
     protected static final long serialVersionUID = 1112122200L; // TODO Why?
 
-    private ChatMessageType type;
+    private MessageType type;
     private String message;
 
-    public ChatMessage(ChatMessageType type, String message) {
+    public Message(MessageType type, String message) {
         this.type = type;
         this.message = message;
     }
 
-    public ChatMessageType getType() {
+    public MessageType getType() {
         return type;
     }
 

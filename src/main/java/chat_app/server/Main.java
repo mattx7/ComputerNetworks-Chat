@@ -5,10 +5,10 @@ package chat_app.server;
  * <p>> java Server [port]</p>
  * If the port is not specified 1500 is used
  */
-public class ServerApp {
+public class Main {
 
     /**
-     * @see ServerApp
+     * @see Main
      */
     public static void main(String[] args) {
         int portNumber = 1500;
@@ -31,7 +31,7 @@ public class ServerApp {
         }
 
         // create a server object and start it
-        ChatServer server = new ChatServer(portNumber);
+        Server server = new Server(portNumber);
         server.start();
     }
 

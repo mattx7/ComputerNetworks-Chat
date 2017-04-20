@@ -1,8 +1,8 @@
 package chat_app.message;
 
 /**
- * Type for {@link ChatMessage}
+ * Type for {@link Message}
  */
-public enum ChatMessageType {
+public enum MessageType {
     WHO_IS_IN, MESSAGE, LOGOUT;
 }

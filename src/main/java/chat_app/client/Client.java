@@ -1,6 +1,6 @@
 package chat_app.client;
 
-import chat_app.message.ChatMessage;
+import chat_app.message.Message;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -11,8 +11,8 @@ import java.net.Socket;
 /**
  * Chat Client
  */
-class ChatClient {
-    private static final Logger LOG = Logger.getLogger(ChatClient.class);
+class Client {
+    private static final Logger LOG = Logger.getLogger(Client.class);
 
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
@@ -22,7 +22,7 @@ class ChatClient {
     private String username;
     private int port;
 
-    ChatClient(String server, String username, int port) {
+    Client(String server, String username, int port) {
         this.server = server;
         this.username = username;
         this.port = port;
@@ -50,7 +50,7 @@ class ChatClient {
         new ServerListener().start();
 
         // Send our username to the server this is the only message that we
-        // will send as a String. All other messages will be ChatMessage objects
+        // will send as a String. All other messages will be Message objects
         try {
             outputStream.writeObject(username);
         } catch (IOException eIO) {
@@ -64,7 +64,7 @@ class ChatClient {
     /**
      * To send message to server.
      */
-    void sendMessage(ChatMessage msg) {
+    void sendMessage(Message msg) {
         try {
             outputStream.writeObject(msg);
         } catch (IOException e) {
