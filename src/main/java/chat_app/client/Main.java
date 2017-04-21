@@ -72,7 +72,12 @@ public class Main {
                 client.sendMessage(new Message(MessageType.LOGOUT, ""));
                 break;
             }
-
+            if (msg.equalsIgnoreCase("HELP")) {
+                System.out.println("" +
+                        "1: LOGOUT for Logout, \n" +
+                        "2: WHOISIN to see logged in clients, \n" +
+                        "3: HELP to see this information \n");
+            }
             // WHO_IS_IN
             else if (msg.equalsIgnoreCase("WHOISIN")) {
                 client.sendMessage(new Message(MessageType.WHO_IS_IN, ""));
