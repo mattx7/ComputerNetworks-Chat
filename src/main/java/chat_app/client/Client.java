@@ -101,8 +101,7 @@ class Client {
                     String msg = (String) inputStream.readObject();
                     display(msg);
                 } catch (final IOException e) {
-                    LOG.error("Error:", e);
-                    display("Server has closed the connection!");
+                    display("Logout by server:");
                     break;
                 } catch (final ClassNotFoundException e) {
                     LOG.error("Error:", e);
