@@ -138,8 +138,9 @@ class ConnectedClient extends Thread {
                     final String nameOfRoom = chatMessage.getMessage();
                     try {
                         // first enter then leave to avoid a state without chat room.
-                        enterChatRoom(nameOfRoom);
+                        ChatRoom room = getRoomByName(nameOfRoom);
                         leaveChatRoom();
+                        enterChatRoom(room);
                         LOG.debug(username + " switched to room " + nameOfRoom);
                     } catch (ChatRoomNotFoundException e) {
                         LOG.error(username + " could't enter " + nameOfRoom);
@@ -228,11 +229,9 @@ class ConnectedClient extends Thread {
     /**
      * Enters new chat-room.
      */
-    private void enterChatRoom(@NotNull String nameOfRoom) throws ChatRoomNotFoundException {
-        Preconditions.checkNotNull(nameOfRoom, "nameOfRoom must not be null.");
+    private void enterChatRoom(@NotNull ChatRoom room) {
+        Preconditions.checkNotNull(room, "room must not be null.");
 
-        final ChatRoom room;
-        room = getRoomByName(nameOfRoom);
         room.enterChatRoom(this);
         this.chatRoom = room;
     }
@@ -243,7 +242,7 @@ class ConnectedClient extends Thread {
     private void leaveChatRoom() {
         LOG.debug(username + " is leaving...");
         chatRoom.removeClientFromRoom(this.clientId);
-        // chatRoom = null; will be overwritten
+        chatRoom = null;
     }
 
     /**
