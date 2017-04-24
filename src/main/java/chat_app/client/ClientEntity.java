@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Chat ClientEntity
+ * Chat-Client
  */
 class ClientEntity {
     private static final Logger LOG = Logger.getLogger(ClientEntity.class);

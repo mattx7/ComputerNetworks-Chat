@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -51,7 +52,7 @@ class ConnectedClient extends Thread {
     private String dateOfConnection;
 
     /**
-     * Holds the reference to the room where the client is member of. TODO better english
+     * Holds the reference to the room where the client is member of.
      */
     private ChatRoom chatRoom;
 
@@ -63,7 +64,7 @@ class ConnectedClient extends Thread {
     /**
      * Holds the reference to the server instance.
      */
-    ServerEntity server;
+    private ServerEntity server;
 
     /**
      * Constructor.
@@ -120,16 +121,14 @@ class ConnectedClient extends Thread {
                     keepGoing = false;
                     break;
                 case WHO_IS_IN:
-                    deliverMessage("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
-                    // scan clientThreads the users connected
-                    for (int i = 0; i < chatRoom.clientThreads.size(); ++i) { // TODO make client list private?
-                        ConnectedClient clientThread = chatRoom.clientThreads.get(i);
-                        deliverMessage((i + 1) + ") " + clientThread.username + " since " + clientThread.dateOfConnection);
-                    }
+                    deliverWhoIsIn();
+                    break;
+                case AVAILABLE_ROOMS:
+                    deliverAvailableRooms();
                     break;
                 case CREATE_ROOM:
                     final String nameOfNewRoom = chatMessage.getMessage();
-                    createChatRoom(nameOfNewRoom); // addRoom in room macht eigentlich kein sinn aber sollte
+                    createChatRoom(nameOfNewRoom);
                     deliverMessage("Created Room " + nameOfNewRoom);
                     LOG.debug("Created Room " + nameOfNewRoom);
                     break;
@@ -149,6 +148,31 @@ class ConnectedClient extends Thread {
 
         leaveChatRoom();
         close();
+    }
+
+    /**
+     * Delivers available rooms to client.
+     */
+    private void deliverAvailableRooms() {
+        deliverMessage("List of all chat rooms: \n");
+        final List<ChatRoom> chatRooms = server.getAllChatRooms();
+        // Print rooms
+        for (int i = 0; i < chatRooms.size(); ++i) {
+            ChatRoom chatRoom = chatRooms.get(i);
+            deliverMessage((i + 1) + ".) " + chatRoom.getName());
+        }
+    }
+
+    /**
+     * Delivers connected clients to client.
+     */
+    private void deliverWhoIsIn() {
+        deliverMessage("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
+        // Print clients
+        for (int i = 0; i < chatRoom.clientThreads.size(); ++i) {
+            ConnectedClient clientThread = chatRoom.clientThreads.get(i);
+            deliverMessage((i + 1) + ".) " + clientThread.username + " since " + clientThread.dateOfConnection);
+        }
     }
 
     /**
@@ -201,21 +225,19 @@ class ConnectedClient extends Thread {
     private void createChatRoom(@NotNull String nameOfNewRoom) {
         Preconditions.checkNotNull(nameOfNewRoom, "nameOfNewRoom must not be null.");
 
-        chatRoom.addRoom(nameOfNewRoom);
+        server.addRoom(nameOfNewRoom);
     }
 
+    /**
+     * Closes IOStreams and socket.
+     */
     private void close() {
         try {
             if (outputStream != null) outputStream.close();
-        } catch (Exception ignored) {
-        }
-        try {
             if (inputStream != null) inputStream.close();
-        } catch (Exception ignored) {
-        }
-        try {
             if (socket != null) socket.close();
         } catch (Exception ignored) {
+            // IGNORED
         }
     }
 

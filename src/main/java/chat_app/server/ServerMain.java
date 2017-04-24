@@ -35,7 +35,7 @@ public class ServerMain {
     }
 
     public static void usage() {
-        System.out.println("ServerEntity usage: > java ServerEntity [port]");
+        System.out.println("Server usage: > java Server [port]");
     }
 
 }

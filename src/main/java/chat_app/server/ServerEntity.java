@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Chat server
@@ -30,7 +31,7 @@ class ServerEntity {
      * Holds the chat rooms.
      */
     @NotNull
-    private ArrayList<ChatRoom> chatRooms;
+    private List<ChatRoom> chatRooms;
 
     /**
      * Holds the waiting hall.
@@ -137,6 +138,14 @@ class ServerEntity {
      */
     int getClientIdFromSequence() {
         return ++clientIdSequence;
+    }
+
+    /**
+     * @return List of all chat-rooms.
+     */
+    @NotNull
+    List<ChatRoom> getAllChatRooms() {
+        return chatRooms;
     }
 
     /**

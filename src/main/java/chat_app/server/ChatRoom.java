@@ -97,12 +97,12 @@ class ChatRoom {
         LOG.debug("Room[" + name + "] <<< " + messageLf);
 
 
-        // we loop in reverse order in case we would have to removeClientFromRoom a Client TODO ??
+        // we loop in reverse order in case we would have to removeClientFromRoom a Client
         // because it has disconnected
         for (int i = clientThreads.size(); --i >= 0; ) {
             ConnectedClient clientThread = clientThreads.get(i);
             // try to write to the Client if it fails removeClientFromRoom it from the list
-            if (!clientThread.deliverMessage(messageLf)) { // TODO vlt immer gleich raus löschen?
+            if (!clientThread.deliverMessage(messageLf)) {
                 clientThreads.remove(i);
 
             }
@@ -131,17 +131,6 @@ class ChatRoom {
      */
     int getClientIdFromSequence() {
         return server.getClientIdFromSequence();
-    }
-
-    /**
-     * Creates and adds a new chat room.
-     *
-     * @param name Name of the room.
-     */
-    void addRoom(@NotNull String name) {
-        Preconditions.checkNotNull(name, "name must not be null.");
-
-        this.server.addRoom(name);
     }
 
 }

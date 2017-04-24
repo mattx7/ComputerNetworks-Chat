@@ -90,10 +90,16 @@ public class ClientMain {
 
             } else  if (msg.equalsIgnoreCase("HELP")) {
                 System.out.println("" +
-                        "1: LOGOUT for Logout, \n" +
-                        "2: WHOISIN to see logged in clients, \n" +
-                        "3: HELP to see this information \n");
-            } else { // DEFAULT MESSAGE
+                        "1.) LOGOUT for Logout, \n" +
+                        "2.) WHOISIN to see logged in clients, \n" +
+                        "3.) HELP to see this information \n" +
+                        "4.) AVAILABLE to get all avilable rooms \n" +
+                        "5.) CREATE to create a new room \n" +
+                        "6.) SWITCH to switch ro another room \n");
+            } else if (msg.equalsIgnoreCase("AVAILABLE")) {
+                client.sendMessage(new ChatMessage(MessageType.AVAILABLE_ROOMS, ""));
+
+            } else {
                 client.sendMessage(new ChatMessage(MessageType.MESSAGE, msg));
             }
         }
@@ -102,7 +108,7 @@ public class ClientMain {
     }
 
     public static void usage() {
-        System.out.println("ClientEntity usage: > java ClientEntity [username] [port] [address]");
+        System.out.println("ClientEntity usage: > java Client [username] [port] [address]");
     }
 
 }

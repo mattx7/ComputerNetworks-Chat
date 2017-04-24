@@ -1,7 +1,7 @@
 package chat_app.server;
 
 /**
- * Created by lionpierau on 23.04.17.
+ * Will be thrown if no chat room can be found.
  */
-public class ChatRoomNotFoundException extends Exception {
+class ChatRoomNotFoundException extends Exception {
 }
