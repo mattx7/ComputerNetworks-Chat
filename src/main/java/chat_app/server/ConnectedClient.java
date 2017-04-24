@@ -154,12 +154,17 @@ class ConnectedClient extends Thread {
      * Delivers available rooms to client.
      */
     private void deliverAvailableRooms() {
-        deliverMessage("List of all chat rooms: \n");
         final List<ChatRoom> chatRooms = server.getAllChatRooms();
-        // Print rooms
-        for (int i = 0; i < chatRooms.size(); ++i) {
-            ChatRoom chatRoom = chatRooms.get(i);
-            deliverMessage((i + 1) + ".) " + chatRoom.getName());
+
+        if (chatRooms.size() != 0) {
+            // Print rooms
+            deliverMessage("List of all chat-rooms: \n");
+            for (int i = 0; i < chatRooms.size(); ++i) {
+                ChatRoom chatRoom = chatRooms.get(i);
+                deliverMessage((i + 1) + ".) " + chatRoom.getName());
+            }
+        } else {
+            deliverMessage("No chat-rooms available. \n");
         }
     }
 
@@ -205,8 +210,9 @@ class ConnectedClient extends Thread {
      * Leave the actual room.
      */
     private void leaveChatRoom() {
+        LOG.debug(username + " is leaving...");
         chatRoom.removeClientFromRoom(this.clientId);
-        // chatRoom = null; will be overwritten later
+        chatRoom = null;
     }
 
     /**

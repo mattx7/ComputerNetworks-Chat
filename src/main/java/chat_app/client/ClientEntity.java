@@ -90,7 +90,6 @@ class ClientEntity {
     void sendMessage(@NotNull ChatMessage msg) {
         try {
             outputStream.writeObject(msg);
-            LOG.debug(username + " has send a message");
         } catch (IOException e) {
             LOG.error("Error:", e);
         }
