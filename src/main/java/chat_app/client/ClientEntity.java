@@ -50,39 +50,38 @@ class ClientEntity {
     /**
      * Starts the connection to the server
      *
-     * @return true if successful
+     * @throws ServerNotFoundException If connection gets refused.
      */
-    boolean start() { // TODO boolean method ersetzen
+    void connect() throws ServerNotFoundException {
 
+        // Connect
         try {
             socket = new Socket(serverAddress, port);
+            LOG.info("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
         } catch (final IOException e) {
-            LOG.error("Error:", e);
-            return false;
+            throw new ServerNotFoundException();
         }
 
-        display("Connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
-
+        // Create Streams
         try {
             inputStream = new ObjectInputStream(socket.getInputStream());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             LOG.error("Error:", e);
-            return false;
+            disconnect();
+            return;
         }
 
+        // Receives messages from server
         new ServerListener(this).start();
 
-        // Send our username to the serverAddress this is the only message that we
-        // will send as a String. All other messages will be ChatMessage objects
+        // Send our username to the server
         try {
             outputStream.writeObject(username);
         } catch (IOException eIO) {
             disconnect();
-            return false;
         }
-        // success we inform the caller that it worked
-        return true;
+
     }
 
     /**
@@ -108,15 +107,15 @@ class ClientEntity {
                 outputStream.close();
             if (socket != null)
                 socket.close();
-        } catch (Exception e) {
-            LOG.error("Error:", e);
+        } catch (Exception ignore) {
+            // IGNORED
         }
     }
 
     /**
      * To display in terminal
      */
-    void display(@NotNull String msg) {
-        System.out.println(msg);
+    void display(@NotNull String message) {
+        System.out.println(message);
     }
 }

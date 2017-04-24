@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * <p>
- * To start the ClientEntity in console mode use one of the following command <br />
+ * To connect the ClientEntity in console mode use one of the following command <br />
  * > java ClientEntity [username] [port] [serverAddress]
  * </p><p>
  * <b>Defaults:</b>
@@ -41,7 +41,7 @@ public class ClientMain {
                 try {
                     portNumber = Integer.parseInt(args[1]);
                 } catch (Exception e) {
-                    System.out.println("Invalid port number.");
+                    LOG.info("Invalid port number.");
                     usage();
                     return;
                 }
@@ -55,9 +55,11 @@ public class ClientMain {
         }
         ClientEntity client = new ClientEntity(address, userName, portNumber);
 
-        // check for server
-        if (!client.start()) {
-            LOG.error("Can't connect to server!");
+        // Connect to server
+        try {
+            client.connect();
+        } catch (ServerNotFoundException e) {
+            LOG.info("Sorry, can't find server!");
             return;
         }
 
@@ -92,10 +94,9 @@ public class ClientMain {
                 System.out.println("" +
                         "1.) LOGOUT for Logout, \n" +
                         "2.) WHOISIN to see logged in clients, \n" +
-                        "3.) HELP to see this information \n" +
-                        "4.) AVAILABLE to get all avilable rooms \n" +
-                        "5.) CREATE to create a new room \n" +
-                        "6.) SWITCH to switch ro another room \n");
+                        "3.) AVAILABLE to get all avilable rooms \n" +
+                        "4.) CREATE to create a new room \n" +
+                        "5.) SWITCH to switch ro another room \n");
             } else if (msg.equalsIgnoreCase("AVAILABLE")) {
                 client.sendMessage(new ChatMessage(MessageType.AVAILABLE_ROOMS, ""));
 
