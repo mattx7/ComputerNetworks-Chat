@@ -10,10 +10,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Chat Client
+ * Chat ClientEntity
  */
-class Client {
-    private static final Logger LOG = Logger.getLogger(Client.class);
+class ClientEntity {
+    private static final Logger LOG = Logger.getLogger(ClientEntity.class);
 
     ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
@@ -41,7 +41,7 @@ class Client {
      * @param username      not null.
      * @param port          not null.
      */
-    Client(@NotNull String serverAddress, @NotNull String username, int port) {
+    ClientEntity(@NotNull String serverAddress, @NotNull String username, int port) {
         this.serverAddress = serverAddress;
         this.username = username;
         this.port = port;

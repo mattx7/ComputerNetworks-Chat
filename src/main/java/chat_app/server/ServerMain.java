@@ -2,7 +2,7 @@ package chat_app.server;
 
 /**
  * Runs with:
- * <p>> java Server [port]</p>
+ * <p>> java ServerEntity [port]</p>
  * If the port is not specified 1500 is used
  */
 public class ServerMain {
@@ -30,12 +30,12 @@ public class ServerMain {
         }
 
         // create a server object and start it
-        Server server = new Server(portNumber);
+        ServerEntity server = new ServerEntity(portNumber);
         server.start();
     }
 
     public static void usage() {
-        System.out.println("Server usage: > java Server [port]");
+        System.out.println("ServerEntity usage: > java ServerEntity [port]");
     }
 
 }

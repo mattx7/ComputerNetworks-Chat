@@ -8,17 +8,17 @@ import java.util.Scanner;
 
 /**
  * <p>
- * To start the Client in console mode use one of the following command <br />
- * > java Client [username] [port] [serverAddress]
+ * To start the ClientEntity in console mode use one of the following command <br />
+ * > java ClientEntity [username] [port] [serverAddress]
  * </p><p>
  * <b>Defaults:</b>
  * - portNumber is 1500 <br />
  * - address is "localhost" <br />
  * - username is "Anonymous"
  * </p><p>
- * > java Client <br />
+ * > java ClientEntity <br />
  * is equivalent to <br />
- * > java Client Anonymous 1500 localhost <br />
+ * > java ClientEntity Anonymous 1500 localhost <br />
  * </p><p>
  * In console mode, if an error occurs the program simply stops
  * </p>
@@ -53,7 +53,7 @@ public class ClientMain {
                 usage();
                 return;
         }
-        Client client = new Client(address, userName, portNumber);
+        ClientEntity client = new ClientEntity(address, userName, portNumber);
 
         // check for server
         if (!client.start()) {
@@ -102,7 +102,7 @@ public class ClientMain {
     }
 
     public static void usage() {
-        System.out.println("Client usage: > java Client [username] [port] [address]");
+        System.out.println("ClientEntity usage: > java ClientEntity [username] [port] [address]");
     }
 
 }

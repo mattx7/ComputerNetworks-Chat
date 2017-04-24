@@ -13,8 +13,8 @@ import java.util.ArrayList;
 /**
  * Chat server
  */
-class Server {
-    private static final Logger LOG = Logger.getLogger(Server.class);
+class ServerEntity {
+    private static final Logger LOG = Logger.getLogger(ServerEntity.class);
 
     /**
      * Unique ID for each connection
@@ -43,7 +43,7 @@ class Server {
     private boolean keepGoing;
 
     /**
-     * Server port.
+     * ServerEntity port.
      */
     @NotNull
     private Integer port;
@@ -54,13 +54,13 @@ class Server {
      *
      * @param port server port.
      */
-    Server(@NotNull Integer port) {
+    ServerEntity(@NotNull Integer port) {
         Preconditions.checkNotNull(port, "port must not be null.");
 
         this.port = port;
         chatRooms = new ArrayList<>();
         waitingHall = new ChatRoom(this, "Waiting-Hall");
-        LOG.debug("Server created.");
+        LOG.debug("ServerEntity created.");
     }
 
     /**
@@ -89,7 +89,7 @@ class Server {
             LOG.error("Exception on new ServerSocket", e);
         }
 
-        LOG.debug("Server started.");
+        LOG.debug("ServerEntity started.");
     }
 
     /**
@@ -147,7 +147,7 @@ class Server {
         try {
             serverSocket.close();
             for (ChatRoom chatRoom : chatRooms) {
-                for (ConnectedClientThread clientThread : chatRoom.clientThreads) {
+                for (ConnectedClient clientThread : chatRoom.clientThreads) {
                     try {
                         clientThread.inputStream.close();
                         clientThread.outputStream.close();

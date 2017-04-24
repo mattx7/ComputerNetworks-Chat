@@ -18,7 +18,7 @@ class ChatRoom {
     /**
      * Holds the list of the Clients.
      */
-    ArrayList<ConnectedClientThread> clientThreads;
+    ArrayList<ConnectedClient> clientThreads;
 
     /**
      * Holds the name of the chat room.
@@ -33,14 +33,14 @@ class ChatRoom {
     /**
      * Holds the server instance.
      */
-    private Server server;
+    private ServerEntity server;
 
     /**
      * Constructor.
      *
      * @param name Name of the chat room.
      */
-    ChatRoom(@NotNull Server server, @NotNull String name) {
+    ChatRoom(@NotNull ServerEntity server, @NotNull String name) {
         Preconditions.checkNotNull(server, "server must not be null.");
         Preconditions.checkNotNull(name, "name must not be null.");
 
@@ -63,7 +63,7 @@ class ChatRoom {
      *
      * @param connectedClient Connection to the client.
      */
-    void enterChatRoom(@NotNull ConnectedClientThread connectedClient) {
+    void enterChatRoom(@NotNull ConnectedClient connectedClient) {
         Preconditions.checkNotNull(connectedClient, "connectedClient must not be null.");
 
         LOG.debug("Client enters the room " + name);
@@ -80,7 +80,7 @@ class ChatRoom {
     void enterChatRoom(@NotNull Socket socket) {
         Preconditions.checkNotNull(socket, "socket must not be null.");
 
-        final ConnectedClientThread connectedClient = new ConnectedClientThread(server, this, socket);
+        final ConnectedClient connectedClient = new ConnectedClient(server, this, socket);
         connectedClient.start();
         enterChatRoom(connectedClient);
     }
@@ -100,7 +100,7 @@ class ChatRoom {
         // we loop in reverse order in case we would have to removeClientFromRoom a Client TODO ??
         // because it has disconnected
         for (int i = clientThreads.size(); --i >= 0; ) {
-            ConnectedClientThread clientThread = clientThreads.get(i);
+            ConnectedClient clientThread = clientThreads.get(i);
             // try to write to the Client if it fails removeClientFromRoom it from the list
             if (!clientThread.deliverMessage(messageLf)) { // TODO vlt immer gleich raus löschen?
                 clientThreads.remove(i);
@@ -117,7 +117,7 @@ class ChatRoom {
     synchronized void removeClientFromRoom(int id) {
         // scan the array list until we found the Id
         for (int i = 0; i < clientThreads.size(); ++i) {
-            ConnectedClientThread client = clientThreads.get(i);
+            ConnectedClient client = clientThreads.get(i);
 
             if (client.clientId == id) {
                 clientThreads.remove(i);

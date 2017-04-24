@@ -17,8 +17,8 @@ import java.util.Date;
 /**
  * One instance of this thread will run for each client.
  */
-class ConnectedClientThread extends Thread {
-    private static final Logger LOG = Logger.getLogger(ConnectedClientThread.class);
+class ConnectedClient extends Thread {
+    private static final Logger LOG = Logger.getLogger(ConnectedClient.class);
 
     /**
      * Unique if (easier for deconnection)
@@ -63,14 +63,14 @@ class ConnectedClientThread extends Thread {
     /**
      * Holds the reference to the server instance.
      */
-    Server server;
+    ServerEntity server;
 
     /**
      * Constructor.
      *
      * @param socket not null.
      */
-    ConnectedClientThread(@NotNull Server server, @NotNull ChatRoom chatRoom, @NotNull Socket socket) {
+    ConnectedClient(@NotNull ServerEntity server, @NotNull ChatRoom chatRoom, @NotNull Socket socket) {
         Preconditions.checkNotNull(server, "server must not be null.");
         Preconditions.checkNotNull(chatRoom, "chatRoom must not be null.");
         Preconditions.checkNotNull(socket, "socket must not be null.");
@@ -105,7 +105,7 @@ class ConnectedClientThread extends Thread {
             // get chatMessage
             try {
                 chatMessage = (ChatMessage) inputStream.readObject();
-                LOG.debug("Server receives message...");
+                LOG.debug("ServerEntity receives message...");
             } catch (final Exception e) {
                 LOG.error("Thread couldn't read object", e);
                 break;
@@ -123,7 +123,7 @@ class ConnectedClientThread extends Thread {
                     deliverMessage("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
                     // scan clientThreads the users connected
                     for (int i = 0; i < chatRoom.clientThreads.size(); ++i) { // TODO make client list private?
-                        ConnectedClientThread clientThread = chatRoom.clientThreads.get(i);
+                        ConnectedClient clientThread = chatRoom.clientThreads.get(i);
                         deliverMessage((i + 1) + ") " + clientThread.username + " since " + clientThread.dateOfConnection);
                     }
                     break;

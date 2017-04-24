@@ -10,9 +10,9 @@ import org.jetbrains.annotations.NotNull;
 class ServerListener extends Thread {
     private final Logger LOG = Logger.getLogger(ServerListener.class);
 
-    private Client client;
+    private ClientEntity client;
 
-    public ServerListener(@NotNull Client client) {
+    public ServerListener(@NotNull ClientEntity client) {
         Preconditions.checkNotNull(client, "client must not be null.");
 
         this.client = client;
