@@ -2,7 +2,7 @@ package chat_app.server;
 
 /**
  * Runs with:
- * <p>> java ServerEntity [port]</p>
+ * <p>> java Server [port]</p>
  * If the port is not specified 1500 is used
  */
 public class ServerMain {

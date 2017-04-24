@@ -3,7 +3,6 @@ package chat_app.server;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Chat server
+ * Chat-Server holds the {@link ChatRoom chat-rooms} and handles the first connection. <br/>
+ * All new clients will be allocate to a default chat-room "Waiting-Hall".
  */
 class ServerEntity {
     private static final Logger LOG = Logger.getLogger(ServerEntity.class);
@@ -120,9 +120,11 @@ class ServerEntity {
 
     /**
      * Returns room by name or null if not found.
+     *
+     * @throws ChatRoomNotFoundException If no room with given name exists.
      */
-    @Nullable
-    ChatRoom getRoomByName(@NotNull String name) {
+    @NotNull
+    ChatRoom getRoomByName(@NotNull String name) throws ChatRoomNotFoundException {
         Preconditions.checkNotNull(name, "name must not be null.");
 
         for (ChatRoom room : chatRooms) {
@@ -130,7 +132,7 @@ class ServerEntity {
                 return room;
             }
         }
-        return null;
+        throw new ChatRoomNotFoundException();
     }
 
     /**
@@ -156,11 +158,11 @@ class ServerEntity {
         try {
             serverSocket.close();
             for (ChatRoom chatRoom : chatRooms) {
-                for (ConnectedClient clientThread : chatRoom.clientThreads) {
+                for (ConnectedClient client : chatRoom.clients) {
                     try {
-                        clientThread.inputStream.close();
-                        clientThread.outputStream.close();
-                        clientThread.socket.close();
+                        client.inputStream.close();
+                        client.outputStream.close();
+                        client.socket.close();
                     } catch (final IOException e) {
                         LOG.error("Exception on close Clients Threads", e);
                     }

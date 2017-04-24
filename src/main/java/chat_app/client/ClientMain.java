@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * <p>
- * To connect the ClientEntity in console mode use one of the following command <br />
+ * To connect the Client in console mode use one of the following command <br />
  * > java ClientEntity [username] [port] [serverAddress]
  * </p><p>
  * <b>Defaults:</b>
@@ -16,11 +16,9 @@ import java.util.Scanner;
  * - address is "localhost" <br />
  * - username is "Anonymous"
  * </p><p>
- * > java ClientEntity <br />
+ * > java Client <br />
  * is equivalent to <br />
- * > java ClientEntity Anonymous 1500 localhost <br />
- * </p><p>
- * In console mode, if an error occurs the program simply stops
+ * > java Client Anonymous 1500 localhost <br />
  * </p>
  */
 public class ClientMain {
@@ -40,7 +38,7 @@ public class ClientMain {
             case 2:
                 try {
                     portNumber = Integer.parseInt(args[1]);
-                } catch (Exception e) {
+                } catch (final NumberFormatException e) {
                     LOG.info("Invalid port number.");
                     usage();
                     return;

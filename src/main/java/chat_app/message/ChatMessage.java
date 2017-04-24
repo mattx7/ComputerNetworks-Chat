@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
 /**
- * ChatMessage for ChatClient
+ * Chat-Message for communication between {@link chat_app.client.ClientEntity Client-Thread} and
+ * {@link chat_app.server.ConnectedClient Connected-Client-Thread} from server.
  */
 public class ChatMessage implements Serializable {
 

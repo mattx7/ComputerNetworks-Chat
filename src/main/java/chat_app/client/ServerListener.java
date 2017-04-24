@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Server listener thread.
+ * Listens to the server for incoming messages and displays it to the client.
  */
 class ServerListener extends Thread {
     private final Logger LOG = Logger.getLogger(ServerListener.class);

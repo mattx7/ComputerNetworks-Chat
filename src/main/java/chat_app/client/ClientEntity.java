@@ -10,7 +10,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * Chat-Client
+ * Is the chat-client for the user. Connects to the server and can send messages.
+ *
+ * @see ServerListener
  */
 class ClientEntity {
     private static final Logger LOG = Logger.getLogger(ClientEntity.class);

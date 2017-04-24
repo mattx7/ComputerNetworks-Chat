@@ -8,9 +8,10 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
- * Chat-ChatRoom for clients.
+ * Chat-Room holds connected clients and sends text messages to them.
  */
 class ChatRoom {
     private static final Logger LOG = Logger.getLogger(ChatRoom.class);
@@ -18,7 +19,7 @@ class ChatRoom {
     /**
      * Holds the list of the Clients.
      */
-    ArrayList<ConnectedClient> clientThreads;
+    List<ConnectedClient> clients;
 
     /**
      * Holds the name of the chat room.
@@ -44,7 +45,7 @@ class ChatRoom {
         Preconditions.checkNotNull(server, "server must not be null.");
         Preconditions.checkNotNull(name, "name must not be null.");
 
-        clientThreads = new ArrayList<>();
+        clients = new ArrayList<>();
         this.name = name;
         this.server = server;
         dateFormatter = new SimpleDateFormat("HH:mm:ss");
@@ -67,7 +68,7 @@ class ChatRoom {
         Preconditions.checkNotNull(connectedClient, "connectedClient must not be null.");
 
         LOG.debug("Client enters the room " + name);
-        clientThreads.add(connectedClient);
+        clients.add(connectedClient);
         connectedClient.deliverMessage("Welcome in Room " + name);
         distributeMessage(connectedClient.getUsername() + " has entered.");
     }
@@ -99,11 +100,11 @@ class ChatRoom {
 
         // we loop in reverse order in case we would have to removeClientFromRoom a Client
         // because it has disconnected
-        for (int i = clientThreads.size(); --i >= 0; ) {
-            ConnectedClient clientThread = clientThreads.get(i);
+        for (int i = clients.size(); --i >= 0; ) {
+            ConnectedClient clientThread = clients.get(i);
             // try to write to the Client if it fails removeClientFromRoom it from the list
             if (!clientThread.deliverMessage(messageLf)) {
-                clientThreads.remove(i);
+                clients.remove(i);
 
             }
         }
@@ -116,21 +117,14 @@ class ChatRoom {
      */
     synchronized void removeClientFromRoom(int id) {
         // scan the array list until we found the Id
-        for (int i = 0; i < clientThreads.size(); ++i) {
-            ConnectedClient client = clientThreads.get(i);
+        for (int i = 0; i < clients.size(); ++i) {
+            ConnectedClient client = clients.get(i);
 
             if (client.clientId == id) {
-                clientThreads.remove(i);
+                clients.remove(i);
                 return;
             }
         }
-    }
-
-    /**
-     * @return new client id.
-     */
-    int getClientIdFromSequence() {
-        return server.getClientIdFromSequence();
     }
 
 }
