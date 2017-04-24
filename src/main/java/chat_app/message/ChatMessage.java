@@ -10,7 +10,7 @@ import java.io.Serializable;
  * {@link chat_app.server.ConnectedClient Connected-Client-Thread} from server.
  */
 public class ChatMessage implements Serializable {
-    protected static final long serialVersionUID = 1112122200L;
+//    protected static final long serialVersionUID = 1112122200L;
 
     @NotNull
     private MessageType type;
