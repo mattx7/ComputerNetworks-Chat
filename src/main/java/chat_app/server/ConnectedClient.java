@@ -142,7 +142,9 @@ class ConnectedClient extends Thread {
                         leaveChatRoom();
                         LOG.debug(username + " switched to room " + nameOfRoom);
                     } catch (ChatRoomNotFoundException e) {
-                        LOG.error(username + " could't enter" + nameOfRoom, e);
+                        LOG.error(username + " could't enter " + nameOfRoom);
+                        deliverMessage("Sorry, couldn't find room " + nameOfRoom);
+                        deliverAvailableRooms();
                     }
                     break;
             }
@@ -196,7 +198,7 @@ class ConnectedClient extends Thread {
                 deliverMessage((i + 1) + ".) " + chatRoom.getName());
             }
         } else {
-            deliverMessage("No chat-rooms available. \n");
+            deliverMessage("Currently are no chat-rooms available. You can create one with CREATE <NAME> \n");
         }
     }
 
