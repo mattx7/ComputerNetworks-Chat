@@ -94,8 +94,8 @@ class ChatRoom {
 
         // add HH:mm:ss and \n to the message
         String time = dateFormatter.format(new Date());
-        String messageLf = time + " " + message + "\n";
-        LOG.debug("Room[" + name + "] <<< " + messageLf);
+        String messageFormatted = time + " " + message;
+        LOG.debug("Room[" + name + "] <<< " + messageFormatted);
 
 
         // we loop in reverse order in case we would have to removeClientFromRoom a Client
@@ -103,7 +103,7 @@ class ChatRoom {
         for (int i = clients.size(); --i >= 0; ) {
             ConnectedClient clientThread = clients.get(i);
             // try to write to the Client if it fails removeClientFromRoom it from the list
-            if (!clientThread.deliverMessage(messageLf)) {
+            if (!clientThread.deliverMessage(messageFormatted + "\n")) {
                 clients.remove(i);
 
             }
