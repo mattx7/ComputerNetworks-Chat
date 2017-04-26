@@ -19,10 +19,10 @@ public class ChatMessage implements Serializable {
     private String message;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param type    message type
-     * @param message message
+     * @param type    message type. Not null.
+     * @param message message. Not null.
      */
     public ChatMessage(@NotNull MessageType type, @NotNull String message) {
         Preconditions.checkNotNull(type, "type must not be null.");

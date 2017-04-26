@@ -221,17 +221,13 @@ class ConnectedClient extends Thread {
      * @param chatMessage not null.
      */
     private void distributeMessage(@NotNull ChatMessage chatMessage) {
-        Preconditions.checkNotNull(chatMessage, "chatMessage must not be null.");
-
-        chatRoom.distributeMessage(username + ": " + chatMessage.getMessage());
+         chatRoom.distributeMessage(username + ": " + chatMessage.getMessage());
     }
 
     /**
      * Enters new chat-room.
      */
     private void enterChatRoom(@NotNull ChatRoom room) {
-        Preconditions.checkNotNull(room, "room must not be null.");
-
         room.enterChatRoom(this);
         this.chatRoom = room;
     }
@@ -252,17 +248,13 @@ class ConnectedClient extends Thread {
      */
     @NotNull
     private ChatRoom getRoomByName(@NotNull String nameOfRoom) throws ChatRoomNotFoundException {
-        Preconditions.checkNotNull(nameOfRoom, "nameOfRoom must not be null.");
-
-        return server.getRoomByName(nameOfRoom);
+          return server.getRoomByName(nameOfRoom);
     }
 
     /**
      * Creates a new chat room.
      */
     private void createChatRoom(@NotNull String nameOfNewRoom) {
-        Preconditions.checkNotNull(nameOfNewRoom, "nameOfNewRoom must not be null.");
-
         server.addRoom(nameOfNewRoom);
     }
 

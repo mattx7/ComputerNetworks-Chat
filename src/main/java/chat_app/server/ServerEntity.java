@@ -53,7 +53,7 @@ class ServerEntity {
     /**
      * Constructor.
      *
-     * @param port server port.
+     * @param port server port. Not null.
      */
     ServerEntity(@NotNull Integer port) {
         Preconditions.checkNotNull(port, "port must not be null.");
@@ -110,7 +110,7 @@ class ServerEntity {
     /**
      * Creates and adds a new chat room.
      *
-     * @param name Name of the room.
+     * @param name Name of the room. Not null.
      */
     void addRoom(@NotNull String name) {
         Preconditions.checkNotNull(name, "name must not be null.");
@@ -121,6 +121,8 @@ class ServerEntity {
     /**
      * Returns room by name or null if not found.
      *
+     * @param name Name of the Room. Not null.
+     * @return Not null.
      * @throws ChatRoomNotFoundException If no room with given name exists.
      */
     @NotNull
@@ -136,14 +138,15 @@ class ServerEntity {
     }
 
     /**
-     * @return new client id.
+     * @return new client id. Not null.
      */
-    int getClientIdFromSequence() {
+    @NotNull
+    Integer getClientIdFromSequence() {
         return ++clientIdSequence;
     }
 
     /**
-     * @return List of all chat-rooms.
+     * @return List of all chat-rooms. Not null.
      */
     @NotNull
     List<ChatRoom> getAllChatRooms() {

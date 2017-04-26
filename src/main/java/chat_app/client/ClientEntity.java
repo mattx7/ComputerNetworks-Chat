@@ -39,9 +39,9 @@ class ClientEntity {
     /**
      * Constructor.
      *
-     * @param serverAddress not null.
-     * @param username      not null.
-     * @param port          not null.
+     * @param serverAddress Not null.
+     * @param username      Not null.
+     * @param port          Not null.
      */
     ClientEntity(@NotNull String serverAddress, @NotNull String username, int port) {
         this.serverAddress = serverAddress;
@@ -88,10 +88,12 @@ class ClientEntity {
 
     /**
      * To send message to serverAddress.
+     *
+     * @param message Not null.
      */
-    void sendMessage(@NotNull ChatMessage msg) {
+    void sendMessage(@NotNull ChatMessage message) {
         try {
-            outputStream.writeObject(msg);
+            outputStream.writeObject(message);
         } catch (IOException e) {
             LOG.error("Error:", e);
         }
@@ -115,6 +117,8 @@ class ClientEntity {
 
     /**
      * To display in terminal
+     *
+     * @param message  Not null.
      */
     void display(@NotNull String message) {
         System.out.println(message);

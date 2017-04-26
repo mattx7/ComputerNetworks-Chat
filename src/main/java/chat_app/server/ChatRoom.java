@@ -39,7 +39,8 @@ class ChatRoom {
     /**
      * Constructor.
      *
-     * @param name Name of the chat room.
+     * @param server Reference to the sever instance. Not null.
+     * @param name Name of the chat room. Not null.
      */
     ChatRoom(@NotNull ServerEntity server, @NotNull String name) {
         Preconditions.checkNotNull(server, "server must not be null.");
@@ -62,7 +63,7 @@ class ChatRoom {
     /**
      * Creates a new thread for each connection.
      *
-     * @param connectedClient Connection to the client.
+     * @param connectedClient Connection to the client. Not null.
      */
     void enterChatRoom(@NotNull ConnectedClient connectedClient) {
         Preconditions.checkNotNull(connectedClient, "connectedClient must not be null.");
@@ -76,7 +77,7 @@ class ChatRoom {
     /**
      * Creates a new thread for each connection.
      *
-     * @param socket Connection to the client.
+     * @param socket Connection to the client. Not null.
      */
     void enterChatRoom(@NotNull Socket socket) {
         Preconditions.checkNotNull(socket, "socket must not be null.");
@@ -88,6 +89,8 @@ class ChatRoom {
 
     /**
      * To distribute a message to all Clients
+     *
+     * @param message Not null.
      */
     synchronized void distributeMessage(@NotNull String message) {
         Preconditions.checkNotNull(message, "message must not be null.");
@@ -113,9 +116,11 @@ class ChatRoom {
     /**
      * For a client who logoff using the LOGOUT message
      *
-     * @param id From Client.
+     * @param id From Client. Not null.
      */
-    synchronized void removeClientFromRoom(int id) {
+    synchronized void removeClientFromRoom(@NotNull Integer id) {
+        Preconditions.checkNotNull(id, "id must not be null.");
+
         // scan the array list until we found the Id
         for (int i = 0; i < clients.size(); ++i) {
             ConnectedClient client = clients.get(i);
