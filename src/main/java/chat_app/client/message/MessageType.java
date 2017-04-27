@@ -1,4 +1,4 @@
-package chat_app.message;
+package chat_app.client.message;
 
 /**
  * Type for {@link ChatMessage}

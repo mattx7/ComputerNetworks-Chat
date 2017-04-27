@@ -1,22 +1,27 @@
-package chat_app.message;
+package chat_app.client.message;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.Serializable;
 
 /**
  * Chat-Message for communication between {@link chat_app.client.ClientEntity Client-Thread} and
  * {@link chat_app.server.ConnectedClient Connected-Client-Thread} from server.
  */
-public class ChatMessage implements Serializable {
-//    protected static final long serialVersionUID = 1112122200L;
+public class ChatMessage {
 
     @NotNull
     private MessageType type;
 
     @NotNull
     private String message;
+
+    /**
+     * For JSON.
+     */
+    public ChatMessage() {
+        this.type = MessageType.MESSAGE;
+        this.message = "";
+    }
 
     /**
      * Constructor.

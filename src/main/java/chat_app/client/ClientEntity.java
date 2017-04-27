@@ -1,6 +1,7 @@
 package chat_app.client;
 
-import chat_app.message.ChatMessage;
+import chat_app.client.message.ChatMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +21,11 @@ class ClientEntity {
     ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private Socket socket;
+
+    /**
+     * Holds JSON-mapper for transfer.
+     */
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * IP or address to the server
@@ -93,7 +99,8 @@ class ClientEntity {
      */
     void sendMessage(@NotNull ChatMessage message) {
         try {
-            outputStream.writeObject(message);
+            String jsonString = mapper.writeValueAsString(message);
+            outputStream.writeObject(jsonString);
         } catch (IOException e) {
             LOG.error("Error:", e);
         }
