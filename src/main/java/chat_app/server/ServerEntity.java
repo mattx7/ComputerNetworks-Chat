@@ -94,25 +94,11 @@ class ServerEntity {
     }
 
     /**
-     * Stops the server TODO STOP() einbinden
-     */
-    void stop() {
-        keepGoing = false;
-        // connect to myself as Client to exit statement
-        // Socket socket = serverSocket.accept();
-        try {
-            new Socket("localhost", port);
-        } catch (Exception e) {
-            // nothing I can really do
-        }
-    }
-
-    /**
      * Creates and adds a new chat room.
      *
      * @param name Name of the room. Not null.
      */
-    void addRoom(@NotNull String name) {
+    synchronized void addRoom(@NotNull String name) {
         Preconditions.checkNotNull(name, "name must not be null.");
 
         this.chatRooms.add(new ChatRoom(this, name));
@@ -126,7 +112,7 @@ class ServerEntity {
      * @throws ChatRoomNotFoundException If no room with given name exists.
      */
     @NotNull
-    ChatRoom getRoomByName(@NotNull String name) throws ChatRoomNotFoundException {
+    synchronized ChatRoom getRoomByName(@NotNull String name) throws ChatRoomNotFoundException {
         Preconditions.checkNotNull(name, "name must not be null.");
 
         for (ChatRoom room : chatRooms) {
@@ -161,7 +147,7 @@ class ServerEntity {
         try {
             serverSocket.close();
             for (ChatRoom chatRoom : chatRooms) {
-                for (ConnectedClient client : chatRoom.clients) {
+                for (ConnectedClient client : chatRoom.getClients()) {
                     try {
                         client.inputStream.close();
                         client.outputStream.close();

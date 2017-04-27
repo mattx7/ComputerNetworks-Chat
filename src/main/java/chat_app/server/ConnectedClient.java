@@ -209,8 +209,9 @@ class ConnectedClient extends Thread {
     private void deliverWhoIsIn() {
         deliverMessage("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
         // Print clients
-        for (int i = 0; i < chatRoom.clients.size(); ++i) {
-            ConnectedClient client = chatRoom.clients.get(i);
+        List<ConnectedClient> clients = chatRoom.getClients();
+        for (int i = 0; i < clients.size(); ++i) {
+            ConnectedClient client = clients.get(i);
             deliverMessage((i + 1) + ".) " + client.username + " since " + client.dateOfConnection);
         }
     }

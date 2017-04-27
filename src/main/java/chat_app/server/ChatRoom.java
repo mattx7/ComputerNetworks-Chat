@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,7 @@ class ChatRoom {
     /**
      * Holds the list of the Clients.
      */
-    List<ConnectedClient> clients;
+    private List<ConnectedClient> clients;
 
     /**
      * Holds the name of the chat room.
@@ -65,7 +66,7 @@ class ChatRoom {
      *
      * @param connectedClient Connection to the client. Not null.
      */
-    void enterChatRoom(@NotNull ConnectedClient connectedClient) {
+    synchronized void enterChatRoom(@NotNull ConnectedClient connectedClient) {
         Preconditions.checkNotNull(connectedClient, "connectedClient must not be null.");
 
         LOG.debug("Client enters the room " + name);
@@ -79,7 +80,7 @@ class ChatRoom {
      *
      * @param socket Connection to the client. Not null.
      */
-    void enterChatRoom(@NotNull Socket socket) {
+    synchronized void enterChatRoom(@NotNull Socket socket) {
         Preconditions.checkNotNull(socket, "socket must not be null.");
 
         final ConnectedClient connectedClient = new ConnectedClient(server, this, socket);
@@ -130,6 +131,13 @@ class ChatRoom {
                 return;
             }
         }
+    }
+
+    /**
+     * @return Unmodifiable List of connected clients.
+     */
+    synchronized List<ConnectedClient> getClients() {
+        return Collections.unmodifiableList(this.clients);
     }
 
 }
