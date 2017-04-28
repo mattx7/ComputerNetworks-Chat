@@ -34,7 +34,7 @@ Other available commands are HELP, WHOISIN to see all users in the current room 
 
 ### For developers
 
-We are using a client-server-architecture that uses a TCP-connection between client and server. Whereby we dont have a typical question-answer protocol because the client can receive message from the server without sending a request.
+We are using a client-server-architecture that uses a TCP-connection between client and server. Whereby we dont have a typical question-answer protocol because the client can receive messages from the server without sending a request.
 
 The **client-application** is composed of a client-entity that specifies the client and a server-listener that informs the client about incoming messages. Furthermore exists a message-object for the transfer.
 
