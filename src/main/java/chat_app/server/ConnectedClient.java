@@ -1,6 +1,6 @@
 package chat_app.server;
 
-import chat_app.server.message.ChatMessage;
+import chat_app.message.ChatMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
@@ -16,13 +16,13 @@ import java.util.List;
 
 
 /**
- * One instance of this thread will run for each client. Receives {@link chat_app.client.message.ChatMessage} from the client.
+ * One instance of this thread will run for each client. Receives {@link chat_app.message.ChatMessage} from the client.
  */
 class ConnectedClient extends Thread {
     private static final Logger LOG = Logger.getLogger(ConnectedClient.class);
 
     /**
-     * Unique if (easier for deconnection)
+     * Unique if (easier for disconnection)
      */
     int clientId;
 
@@ -268,11 +268,15 @@ class ConnectedClient extends Thread {
     /**
      * Closes IOStreams and socket.
      */
+    @SuppressWarnings("Duplicates")
     private void close() {
         try {
-            if (outputStream != null) outputStream.close();
-            if (inputStream != null) inputStream.close();
-            if (socket != null) socket.close();
+            if (outputStream != null)
+                outputStream.close();
+            if (inputStream != null)
+                inputStream.close();
+            if (socket != null)
+                socket.close();
         } catch (Exception ignored) {
             // IGNORED
         }

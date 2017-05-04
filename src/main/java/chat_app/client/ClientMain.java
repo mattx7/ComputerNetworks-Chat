@@ -1,7 +1,7 @@
 package chat_app.client;
 
-import chat_app.client.message.ChatMessage;
-import chat_app.client.message.MessageType;
+import chat_app.message.ChatMessage;
+import chat_app.message.MessageType;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;

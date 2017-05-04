@@ -1,6 +1,6 @@
 package chat_app.client;
 
-import chat_app.client.message.ChatMessage;
+import chat_app.message.ChatMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -109,6 +109,7 @@ class ClientEntity {
     /**
      * Close connection and streams.
      */
+    @SuppressWarnings("Duplicates")
     void disconnect() {
         try {
             if (inputStream != null)

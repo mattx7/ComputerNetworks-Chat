@@ -1,4 +1,4 @@
-package chat_app.client.message;
+package chat_app.message;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +18,7 @@ public class ChatMessage {
     /**
      * For JSON.
      */
+    @SuppressWarnings("unused")
     public ChatMessage() {
         this.type = MessageType.MESSAGE;
         this.message = "";
