@@ -1,10 +1,10 @@
 package chat_app.server;
 
+import chat_app.utility.Connection;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,12 +78,12 @@ class ChatRoom {
     /**
      * Creates a new thread for each connection.
      *
-     * @param socket Connection to the client. Not null.
+     * @param connection Connection to the client. Not null.
      */
-    synchronized void enterChatRoom(@NotNull Socket socket) {
-        Preconditions.checkNotNull(socket, "socket must not be null.");
+    synchronized void enterChatRoom(@NotNull Connection connection) {
+        Preconditions.checkNotNull(connection, "socket must not be null.");
 
-        final ConnectedClient connectedClient = new ConnectedClient(server, this, socket);
+        final ConnectedClient connectedClient = new ConnectedClient(server, this, connection);
         connectedClient.start();
         enterChatRoom(connectedClient);
     }
@@ -106,7 +106,7 @@ class ChatRoom {
         // because it has disconnected
         for (int i = clients.size(); --i >= 0; ) {
             ConnectedClient clientThread = clients.get(i);
-            // try to write to the Client if it fails removeClientFromRoom it from the list
+            // try to write to the Client if it fails removeClientFromRoom it format the list
             if (!clientThread.deliverMessage(messageFormatted + "\n")) {
                 clients.remove(i);
 

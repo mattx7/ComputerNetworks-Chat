@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * ClientMain application for server and client.
+ * Main application for server and client.
  */
 public class MainApp {
 
@@ -33,7 +33,7 @@ public class MainApp {
     }
 
     /**
-     * Shows full usage from server and client.
+     * Shows full usage format server and client.
      */
     private static void usage() {
         ServerMain.usage();

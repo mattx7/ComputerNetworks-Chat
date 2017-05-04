@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Chat-Message for communication between {@link chat_app.client.ClientEntity Client-Thread} and
- * {@link chat_app.server.ConnectedClient Connected-Client-Thread} from server.
+ * {@link chat_app.server.ConnectedClient Connected-Client-Thread} format server.
  */
 public class ChatMessage {
 
@@ -16,7 +16,7 @@ public class ChatMessage {
     private String message;
 
     /**
-     * For JSON.
+     * Constructor for JSON.
      */
     @SuppressWarnings("unused")
     public ChatMessage() {
@@ -25,10 +25,20 @@ public class ChatMessage {
     }
 
     /**
-     * Constructor.
+     * Constructor for convenience.
      *
-     * @param type    message type. Not null.
-     * @param message message. Not null.
+     * @param message Not null.
+     */
+    public ChatMessage(@NotNull String message) {
+        this.type = MessageType.MESSAGE;
+        this.message = message;
+    }
+
+    /**
+     * Full Constructor.
+     *
+     * @param type    Not null.
+     * @param message Not null.
      */
     public ChatMessage(@NotNull MessageType type, @NotNull String message) {
         Preconditions.checkNotNull(type, "type must not be null.");

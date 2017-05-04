@@ -1,5 +1,6 @@
 package chat_app.server;
 
+import chat_app.utility.Connection;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -78,7 +79,7 @@ class ServerEntity {
             // Infinite loop to wait for connections
             while (keepGoing) {
                 Socket socket = serverSocket.accept();    // accept connection
-                waitingHall.enterChatRoom(socket);
+                waitingHall.enterChatRoom(Connection.to(socket));
                 if (!keepGoing)
                     break;
             }
@@ -148,13 +149,7 @@ class ServerEntity {
             serverSocket.close();
             for (ChatRoom chatRoom : chatRooms) {
                 for (ConnectedClient client : chatRoom.getClients()) {
-                    try {
-                        client.inputStream.close();
-                        client.outputStream.close();
-                        client.socket.close();
-                    } catch (final IOException e) {
-                        LOG.error("Exception on close Clients Threads", e);
-                    }
+                    client.disconnect();
                 }
             }
 

@@ -1,15 +1,12 @@
 package chat_app.server;
 
 import chat_app.message.ChatMessage;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import chat_app.utility.Connection;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -27,19 +24,9 @@ class ConnectedClient extends Thread {
     int clientId;
 
     /**
-     * Socket to the client.
+     * Connection to the client.
      */
-    Socket socket;
-
-    /**
-     * Input-Stream from client.
-     */
-    ObjectInputStream inputStream;
-
-    /**
-     * Output-Stream to client.
-     */
-    ObjectOutputStream outputStream;
+    private Connection connection;
 
     /**
      * Username of the client.
@@ -66,35 +53,23 @@ class ConnectedClient extends Thread {
      */
     private ServerEntity server;
 
-    /**
-     * JSON mapper for transfer.
-     */
-    private ObjectMapper mapper = new ObjectMapper();
-
-    /**
-     * Constructor.
-     *
-     * @param socket not null.
-     */
-    ConnectedClient(@NotNull ServerEntity server, @NotNull ChatRoom chatRoom, @NotNull Socket socket) {
+    ConnectedClient(@NotNull ServerEntity server,
+                    @NotNull ChatRoom chatRoom,
+                    @NotNull Connection connection) {
         Preconditions.checkNotNull(server, "server must not be null.");
         Preconditions.checkNotNull(chatRoom, "chatRoom must not be null.");
-        Preconditions.checkNotNull(socket, "socket must not be null.");
+        Preconditions.checkNotNull(connection, "socket must not be null.");
 
         this.server = server;
         this.chatRoom = chatRoom;
-        this.socket = socket;
         this.clientId = server.getClientIdFromSequence();
         this.dateOfConnection = new Date().toString() + "\n";
         this.dateFormatter = new SimpleDateFormat("HH:mm:ss");
+        this.connection = connection;
 
         // Creating Data Streams
         try {
-            outputStream = new ObjectOutputStream(socket.getOutputStream());
-            inputStream = new ObjectInputStream(socket.getInputStream());
-
-            username = (String) inputStream.readObject();
-
+            username = connection.receive().getMessage();
             LOG.debug("Thread has created IOStreams for new client");
 
         } catch (final Exception e) {
@@ -113,7 +88,7 @@ class ConnectedClient extends Thread {
         while (keepGoing) {
             // get chatMessage
             try {
-                chatMessage = mapper.readValue((String) inputStream.readObject(), ChatMessage.class);
+                chatMessage = connection.receive();
                 LOG.debug("ServerEntity receives message...");
             } catch (final Exception e) {
                 LOG.error("Thread couldn't read object", e);
@@ -158,7 +133,7 @@ class ConnectedClient extends Thread {
         }
 
         leaveChatRoom();
-        close();
+        connection.kill();
     }
 
     /**
@@ -175,20 +150,27 @@ class ConnectedClient extends Thread {
     boolean deliverMessage(@NotNull String message) { // TODO Bool -> Exc
         Preconditions.checkNotNull(message, "message must not be null.");
 
-        // if Client is still connected send the message to it
-        if (!socket.isConnected()) {
-            close();
+        // if client is still connected send the message to it
+        if (!connection.isActive()) {
+            connection.kill();
             return false;
         }
 
         // write the message to the stream
         try {
-            outputStream.writeObject(message);
+            connection.send(message);
         } catch (final IOException e) {
             LOG.debug("Couldn't write message to stream", e);
             // if an error occurs, do not abort just inform the user
         }
         return true;
+    }
+
+    /**
+     * Kills the connection.
+     */
+    void disconnect() {
+        connection.kill();
     }
 
     /**
@@ -199,7 +181,7 @@ class ConnectedClient extends Thread {
 
         if (chatRooms.size() != 0) {
             // Print rooms
-            deliverMessage("List of all chat-rooms: \n");
+            deliverMessage("List of all chat-rooms:");
             for (int i = 0; i < chatRooms.size(); ++i) {
                 ChatRoom chatRoom = chatRooms.get(i);
                 deliverMessage((i + 1) + ".) " + chatRoom.getName());
@@ -228,7 +210,7 @@ class ConnectedClient extends Thread {
      * @param chatMessage not null.
      */
     private void distributeMessage(@NotNull ChatMessage chatMessage) {
-         chatRoom.distributeMessage(username + ": " + chatMessage.getMessage());
+        chatRoom.distributeMessage(username + ": " + chatMessage.getMessage());
     }
 
     /**
@@ -255,7 +237,7 @@ class ConnectedClient extends Thread {
      */
     @NotNull
     private ChatRoom getRoomByName(@NotNull String nameOfRoom) throws ChatRoomNotFoundException {
-          return server.getRoomByName(nameOfRoom);
+        return server.getRoomByName(nameOfRoom);
     }
 
     /**
@@ -263,22 +245,5 @@ class ConnectedClient extends Thread {
      */
     private void createChatRoom(@NotNull String nameOfNewRoom) {
         server.addRoom(nameOfNewRoom);
-    }
-
-    /**
-     * Closes IOStreams and socket.
-     */
-    @SuppressWarnings("Duplicates")
-    private void close() {
-        try {
-            if (outputStream != null)
-                outputStream.close();
-            if (inputStream != null)
-                inputStream.close();
-            if (socket != null)
-                socket.close();
-        } catch (Exception ignored) {
-            // IGNORED
-        }
     }
 }

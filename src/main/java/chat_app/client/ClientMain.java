@@ -61,7 +61,7 @@ public class ClientMain {
             return;
         }
 
-        // wait for messages from user
+        // wait for messages format user
         Scanner scan = new Scanner(System.in);
         while (true) { // TODO replace while(true)
             System.out.print("> ");
@@ -103,7 +103,7 @@ public class ClientMain {
             }
         }
 
-        client.disconnect();
+        client.connection.kill();
     }
 
     public static void usage() {

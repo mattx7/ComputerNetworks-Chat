@@ -29,8 +29,7 @@ class ServerListener extends Thread {
     public void run() {
         while (true) { // TODO replace while true
             try {
-                String msg = (String) client.inputStream.readObject();
-                client.display(msg);
+                client.display(client.connection.receive());
             } catch (final Exception e) {
                 client.display("Server has closed the connection!");
                 break;
