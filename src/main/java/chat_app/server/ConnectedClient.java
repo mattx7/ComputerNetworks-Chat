@@ -122,7 +122,12 @@ class ConnectedClient extends Thread {
                     final String nameOfRoom = message.getPayload();
                     try {
                         // first enter then leave to avoid a state without chat room.
-                        ChatRoom room = getRoomByName(nameOfRoom);
+                        ChatRoom room;
+                        if (nameOfRoom.equals("")) {
+                            room = getRoomByName(nameOfRoom);
+                        } else {
+                            room = getWaitingHall();
+                        }
                         leaveChatRoom();
                         enterChatRoom(room);
                         LOG.debug(username + " switched to room " + nameOfRoom);
@@ -183,7 +188,7 @@ class ConnectedClient extends Thread {
         deliverMessage("" +
                 "1.) LOGOUT for Logout, \n" +
                 "2.) WHOISIN to see logged in clients, \n" +
-                "3.) AVAILABLE to get all avilable rooms \n" +
+                "3.) AVAILABLE to get all available rooms \n" +
                 "4.) CREATE to create a new room \n" +
                 "5.) SWITCH to switch ro another room \n");
     }
@@ -259,5 +264,12 @@ class ConnectedClient extends Thread {
      */
     private void createChatRoom(@NotNull final String nameOfNewRoom) {
         server.addRoom(nameOfNewRoom);
+    }
+
+    /**
+     * @return Waiting-Hall from server.
+     */
+    private ChatRoom getWaitingHall() {
+        return server.getWaitingHall();
     }
 }

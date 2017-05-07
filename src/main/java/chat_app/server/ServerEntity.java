@@ -62,6 +62,7 @@ class ServerEntity {
         this.port = port;
         chatRooms = new ArrayList<>();
         waitingHall = new ChatRoom(this, "Waiting-Hall");
+        chatRooms.add(waitingHall);
         LOG.debug("ServerEntity created.");
     }
 
@@ -156,6 +157,10 @@ class ServerEntity {
         } catch (final Exception ignored) {
         }
         LOG.debug("All connections closed!");
+    }
+
+    public ChatRoom getWaitingHall() {
+        return waitingHall;
     }
 }
 

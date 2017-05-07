@@ -1,6 +1,6 @@
-# Rechnernetze-Chat
+# Computer networks - chat
 
-This application is a small chat that runs in the shell. It consits of two separate parts, a client and a server. It is to consider that the server has to run bevor the chat.
+This application is a small chat that runs in the shell. It consists of two separate parts, a client and a server. It is to consider that the server has to run before the chat.
 
 ## Getting started
 
@@ -29,7 +29,7 @@ Defaults:
 
 ### For users
 
-When a user connects to the server he will be allocated to the room waiting-hall. The waiting-hall is the only default room from the server. All user can create new rooms with the command "CREATE [NameOFRoom]" or look if there are existing rooms with the command "AVAILABLE". A switch to another room is possible with the command "SWITCH [NameOFRoom]". (NOTE: You can't go back to the waiting-hall) 
+When a user connects to the server he will be allocated to the room waiting-hall. The waiting-hall is the only default room from the server. All user can create new rooms with the command "CREATE [NameOFRoom]" or look if there are existing rooms with the command "AVAILABLE". A switch to another room is possible with the command "SWITCH [NameOFRoom]".
 Other available commands are HELP, WHOISIN to see all users in the current room or LOGOUT to disconnect from the server.
 
 ### For developers
