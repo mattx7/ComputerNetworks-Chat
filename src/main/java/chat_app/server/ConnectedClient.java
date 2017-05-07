@@ -1,6 +1,6 @@
 package chat_app.server;
 
-import chat_app.message.ChatMessage;
+import chat_app.transfer_object.Message;
 import chat_app.utility.Connection;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
@@ -13,7 +13,7 @@ import java.util.List;
 
 
 /**
- * One instance of this thread will run for each client. Receives {@link chat_app.message.ChatMessage} from the client.
+ * One instance of this thread will run for each client. Receives {@link Message} from the client.
  */
 class ConnectedClient extends Thread {
     private static final Logger LOG = Logger.getLogger(ConnectedClient.class);
@@ -69,7 +69,7 @@ class ConnectedClient extends Thread {
 
         // Creating Data Streams
         try {
-            username = connection.receive().getMessage();
+            username = connection.receive().getPayload();
             LOG.debug("Thread has created IOStreams for new client");
 
         } catch (final Exception e) {
@@ -83,22 +83,25 @@ class ConnectedClient extends Thread {
      */
     public void run() {
         boolean keepGoing = true;
-        ChatMessage chatMessage;
+        Message message;
 
         while (keepGoing) {
-            // get chatMessage
+            // get message
             try {
-                chatMessage = connection.receive();
-                LOG.debug("ServerEntity receives message...");
+                message = connection.receive();
+                LOG.debug("ServerEntity receives transfer_object...");
             } catch (final Exception e) {
                 LOG.error("Thread couldn't read object", e);
                 break;
             }
 
-            // Type of chatMessage receive
-            switch (chatMessage.getType()) {
+            // Type of message receive
+            switch (message.getType()) {
                 case MESSAGE:
-                    distributeMessage(chatMessage);
+                    distributeMessage(message);
+                    break;
+                case HELP:
+                    deliverHelp();
                     break;
                 case LOGOUT:
                     keepGoing = false;
@@ -110,13 +113,13 @@ class ConnectedClient extends Thread {
                     deliverAvailableRooms();
                     break;
                 case CREATE_ROOM:
-                    final String nameOfNewRoom = chatMessage.getMessage();
+                    final String nameOfNewRoom = message.getPayload();
                     createChatRoom(nameOfNewRoom);
                     deliverMessage("Created Room " + nameOfNewRoom);
                     LOG.debug("Created Room " + nameOfNewRoom);
                     break;
                 case SWITCH_ROOM:
-                    final String nameOfRoom = chatMessage.getMessage();
+                    final String nameOfRoom = message.getPayload();
                     try {
                         // first enter then leave to avoid a state without chat room.
                         ChatRoom room = getRoomByName(nameOfRoom);
@@ -145,32 +148,44 @@ class ConnectedClient extends Thread {
     }
 
     /**
-     * Write a String to the Client output stream.
-     */
-    boolean deliverMessage(@NotNull String message) { // TODO Bool -> Exc
-        Preconditions.checkNotNull(message, "message must not be null.");
-
-        // if client is still connected send the message to it
-        if (!connection.isActive()) {
-            connection.kill();
-            return false;
-        }
-
-        // write the message to the stream
-        try {
-            connection.send(message);
-        } catch (final IOException e) {
-            LOG.debug("Couldn't write message to stream", e);
-            // if an error occurs, do not abort just inform the user
-        }
-        return true;
-    }
-
-    /**
      * Kills the connection.
      */
     void disconnect() {
         connection.kill();
+    }
+
+    /**
+     * Write a String to the Client output stream.
+     */
+    boolean deliverMessage(@NotNull final String message) {
+        Preconditions.checkNotNull(message, "transfer_object must not be null.");
+
+        // PRECONDITION: Client still connected.
+        if (connection.isInactive()) {
+            connection.kill();
+            return false;
+        }
+
+        try {
+            connection.send(message);
+            return true;
+        } catch (final IOException e) {
+            // if an error occurs, do not abort just inform the user
+            LOG.debug("Couldn't write transfer_object to stream", e);
+            return false;
+        }
+    }
+
+    /**
+     * Delivers help message.
+     */
+    private void deliverHelp() {
+        deliverMessage("" +
+                "1.) LOGOUT for Logout, \n" +
+                "2.) WHOISIN to see logged in clients, \n" +
+                "3.) AVAILABLE to get all avilable rooms \n" +
+                "4.) CREATE to create a new room \n" +
+                "5.) SWITCH to switch ro another room \n");
     }
 
     /**
@@ -196,7 +211,6 @@ class ConnectedClient extends Thread {
      */
     private void deliverWhoIsIn() {
         deliverMessage("List of the users connected at " + dateFormatter.format(new Date()) + "\n");
-        // Print clients
         List<ConnectedClient> clients = chatRoom.getClients();
         for (int i = 0; i < clients.size(); ++i) {
             ConnectedClient client = clients.get(i);
@@ -205,18 +219,18 @@ class ConnectedClient extends Thread {
     }
 
     /**
-     * Distributes a message to all clients.
+     * Distributes a transfer_object to all clients.
      *
-     * @param chatMessage not null.
+     * @param message not null.
      */
-    private void distributeMessage(@NotNull ChatMessage chatMessage) {
-        chatRoom.distributeMessage(username + ": " + chatMessage.getMessage());
+    private void distributeMessage(@NotNull final Message message) {
+        chatRoom.distributeMessage(username + ": " + message.getPayload());
     }
 
     /**
      * Enters new chat-room.
      */
-    private void enterChatRoom(@NotNull ChatRoom room) {
+    private void enterChatRoom(@NotNull final ChatRoom room) {
         room.enterChatRoom(this);
         this.chatRoom = room;
     }
@@ -236,14 +250,14 @@ class ConnectedClient extends Thread {
      * @throws ChatRoomNotFoundException If no room with given name exists.
      */
     @NotNull
-    private ChatRoom getRoomByName(@NotNull String nameOfRoom) throws ChatRoomNotFoundException {
+    private ChatRoom getRoomByName(@NotNull final String nameOfRoom) throws ChatRoomNotFoundException {
         return server.getRoomByName(nameOfRoom);
     }
 
     /**
      * Creates a new chat room.
      */
-    private void createChatRoom(@NotNull String nameOfNewRoom) {
+    private void createChatRoom(@NotNull final String nameOfNewRoom) {
         server.addRoom(nameOfNewRoom);
     }
 }

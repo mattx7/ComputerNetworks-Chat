@@ -1,4 +1,4 @@
-package chat_app.message;
+package chat_app.transfer_object;
 
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
@@ -7,45 +7,55 @@ import org.jetbrains.annotations.NotNull;
  * Chat-Message for communication between {@link chat_app.client.ClientEntity Client-Thread} and
  * {@link chat_app.server.ConnectedClient Connected-Client-Thread} format server.
  */
-public class ChatMessage {
+public class Message {
 
     @NotNull
     private MessageType type;
 
     @NotNull
-    private String message;
+    private String payload;
 
     /**
      * Constructor for JSON.
      */
     @SuppressWarnings("unused")
-    public ChatMessage() {
+    public Message() {
         this.type = MessageType.MESSAGE;
-        this.message = "";
+        this.payload = "";
     }
 
     /**
      * Constructor for convenience.
      *
-     * @param message Not null.
+     * @param type Not null.
      */
-    public ChatMessage(@NotNull String message) {
+    public Message(@NotNull final MessageType type) {
+        this.type = type;
+        this.payload = "";
+    }
+
+    /**
+     * Constructor for convenience.
+     *
+     * @param payload Not null.
+     */
+    public Message(@NotNull final String payload) {
         this.type = MessageType.MESSAGE;
-        this.message = message;
+        this.payload = payload;
     }
 
     /**
      * Full Constructor.
      *
      * @param type    Not null.
-     * @param message Not null.
+     * @param payload Not null.
      */
-    public ChatMessage(@NotNull MessageType type, @NotNull String message) {
+    public Message(@NotNull final MessageType type, @NotNull final String payload) {
         Preconditions.checkNotNull(type, "type must not be null.");
-        Preconditions.checkNotNull(message, "message must not be null.");
+        Preconditions.checkNotNull(payload, "payload must not be null.");
 
         this.type = type;
-        this.message = message;
+        this.payload = payload;
     }
 
     /**
@@ -57,11 +67,11 @@ public class ChatMessage {
     }
 
     /**
-     * @return message.
+     * @return payload.
      */
     @NotNull
-    public String getMessage() {
-        return message;
+    public String getPayload() {
+        return payload;
     }
 
 }

@@ -40,8 +40,8 @@ The **client-application** is composed of a client-entity that specifies the cli
 
 The **server-application** has a server-entity similar to the client-entity and chat-rooms that holds the connected clients. Every connected client gets his own thread, which will be hold in the room-objects. When a client trys to connect to the server the server-entity accepts the connection and waits for the username from the client. After that the socket will be moved to the default room "Waiting-Hall". Everytime a client switches to another room his socket, he is connected with on the server side, will be moved to the new room.
 
-All **messages** are intern handled as a message-objet that consits of the name of the sender, a timestamp, a text and a type. Possible are the types WHO_IS_IN, MESSAGE, LOGOUT, CREATE_ROOM, SWITCH_ROOM, AVAILABLE_ROOMS or HELP. Every message-type stands for an other command the client can use. The default is the type "message" for the transfer of a text which the user entered. For the transfer will the message-oject converted to JSON.
-The advantage of the own message-object is that it can hold commands and separate informations. Furthermore is it more scalable in further development. 
+All **messages** are intern handled as a message-object that consists of a type and a payload as String. Possible are the types WHO_IS_IN, MESSAGE, LOGOUT, CREATE_ROOM, SWITCH_ROOM, AVAILABLE_ROOMS or HELP. Every message-type stands for an other command the client can use. The default is the type "message" for the transfer of a text which the user entered. For the transfer will the message-object converted to JSON.
+The advantage of the own message-object is that it can hold commands and separate information. Furthermore is it more scalable in further development. 
 On the server side the sent message will be assumed from the allocated thread for the client, which executes a method from the room that allocates the message to all client-thread the room is holding. All client-threads will send these message to their connected clients.  
 
 ### Data Model

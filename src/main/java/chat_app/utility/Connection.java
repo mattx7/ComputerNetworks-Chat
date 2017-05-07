@@ -1,6 +1,6 @@
 package chat_app.utility;
 
-import chat_app.message.ChatMessage;
+import chat_app.transfer_object.Message;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,7 @@ public class Connection {
     /**
      * Creates new instance.
      */
-    public synchronized static Connection to(@NotNull Socket socket) throws IOException {
+    public synchronized static Connection to(@NotNull final Socket socket) throws IOException {
         Preconditions.checkNotNull(socket, "socket must not be null.");
 
         return new Connection(socket);
@@ -42,8 +42,8 @@ public class Connection {
     /**
      * Creates new instance.
      */
-    public synchronized static Connection to(@NotNull String serverAddress,
-                                             @NotNull Integer port) throws IOException {
+    public synchronized static Connection to(@NotNull final String serverAddress,
+                                             @NotNull final Integer port) throws IOException {
         Preconditions.checkNotNull(serverAddress, "serverAddress must not be null.");
         Preconditions.checkNotNull(port, "port must not be null.");
 
@@ -51,29 +51,39 @@ public class Connection {
     }
 
     /**
-     * Receives {@link ChatMessage} from socket.
+     * Receives {@link Message} from socket.
      */
     @NotNull
-    public ChatMessage receive() throws IOException, ClassNotFoundException {
-        return JSON.valueOf((String) inputStream.readObject()).to(ChatMessage.class);
+    public Message receive() throws IOException, ClassNotFoundException {
+        return JSON.valueOf((String) inputStream.readObject()).to(Message.class);
     }
 
     /**
-     * Sends {@link ChatMessage}.
+     * Sends {@link Message}.
      */
-    public void send(@NotNull ChatMessage chatMessage) throws IOException {
-        outputStream.writeObject(JSON.format(chatMessage));
+    public void send(@NotNull final Message message) throws IOException {
+        outputStream.writeObject(JSON.format(message));
     }
 
     /**
-     * Wraps string to default {@link ChatMessage} and sends it.
+     * Wraps string to default {@link Message} and sends it.
      */
-    public void send(@NotNull String message) throws IOException {
-        send(new ChatMessage(message));
+    public void send(@NotNull final String message) throws IOException {
+        send(new Message(message));
     }
 
+    /**
+     * @return True, if still connected.
+     */
     public boolean isActive() {
-        return socket.isConnected();
+        return !socket.isClosed();
+    }
+
+    /**
+     * @return True, if connection is closed.
+     */
+    public boolean isInactive() {
+        return !isActive();
     }
 
     /**

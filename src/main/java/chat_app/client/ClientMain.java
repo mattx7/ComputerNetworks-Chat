@@ -1,7 +1,7 @@
 package chat_app.client;
 
-import chat_app.message.ChatMessage;
-import chat_app.message.MessageType;
+import chat_app.transfer_object.Message;
+import chat_app.transfer_object.MessageType;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;
@@ -51,59 +51,55 @@ public class ClientMain {
                 usage();
                 return;
         }
-        ClientEntity client = new ClientEntity(address, userName, portNumber);
+        ClientEntity client = new ClientEntity(userName);
 
         // Connect to server
         try {
-            client.connect();
+            client.connect(address, portNumber);
         } catch (ServerNotFoundException e) {
             LOG.info("Sorry, can't find server!");
             return;
         }
 
-        // wait for messages format user
+        // wait for messages from user
         Scanner scan = new Scanner(System.in);
-        while (true) { // TODO replace while(true)
-            System.out.print("> ");
-            String msg = scan.nextLine();
+        while (client.connection.isActive()) {
+            if (scan.hasNext()) {
+                System.out.print("> ");
+                String msg = scan.nextLine();
 
-            final String[] msgInWords = msg.split(" ");
-            String command = "";
-            String nameOfRoom = "";
-            if (msgInWords.length == 2) {
-                command = (msgInWords[0]);
-                nameOfRoom = (msgInWords[1]);
-            }
+                final String[] msgInWords = msg.split(" ");
+                String command = "";
+                String nameOfRoom = "";
+                if (msgInWords.length == 2) {
+                    command = (msgInWords[0]);
+                    nameOfRoom = (msgInWords[1]);
+                }
 
-            if (msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new ChatMessage(MessageType.LOGOUT, ""));
-                break;
+                if (msg.equalsIgnoreCase("LOGOUT")) {
+                    client.sendMessage(new Message(MessageType.LOGOUT));
+                    break;
 
-            } else if (msg.equalsIgnoreCase("WHOISIN")) {
-                client.sendMessage(new ChatMessage(MessageType.WHO_IS_IN, ""));
+                } else if (msg.equalsIgnoreCase("WHOISIN")) {
+                    client.sendMessage(new Message(MessageType.WHO_IS_IN));
 
-            } else if (command.equalsIgnoreCase("SWITCH")) {
-                client.sendMessage(new ChatMessage(MessageType.SWITCH_ROOM, nameOfRoom));
+                } else if (command.equalsIgnoreCase("SWITCH")) {
+                    client.sendMessage(new Message(MessageType.SWITCH_ROOM, nameOfRoom));
 
-            } else if (command.equalsIgnoreCase("CREATE")) {
-                client.sendMessage(new ChatMessage(MessageType.CREATE_ROOM, nameOfRoom));
+                } else if (command.equalsIgnoreCase("CREATE")) {
+                    client.sendMessage(new Message(MessageType.CREATE_ROOM, nameOfRoom));
 
-            } else  if (msg.equalsIgnoreCase("HELP")) {
-                System.out.println("" +
-                        "1.) LOGOUT for Logout, \n" +
-                        "2.) WHOISIN to see logged in clients, \n" +
-                        "3.) AVAILABLE to get all avilable rooms \n" +
-                        "4.) CREATE to create a new room \n" +
-                        "5.) SWITCH to switch ro another room \n");
-            } else if (msg.equalsIgnoreCase("AVAILABLE")) {
-                client.sendMessage(new ChatMessage(MessageType.AVAILABLE_ROOMS, ""));
+                } else if (msg.equalsIgnoreCase("HELP")) {
+                    client.sendMessage(new Message(MessageType.HELP));
 
-            } else {
-                client.sendMessage(new ChatMessage(MessageType.MESSAGE, msg));
+                } else if (msg.equalsIgnoreCase("AVAILABLE")) {
+                    client.sendMessage(new Message(MessageType.AVAILABLE_ROOMS));
+
+                } else {
+                    client.sendMessage(new Message(MessageType.MESSAGE, msg));
+                }
             }
         }
-
-        client.connection.kill();
     }
 
     public static void usage() {

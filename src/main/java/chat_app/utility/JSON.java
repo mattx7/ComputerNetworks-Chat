@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * JSON MapperWrapper.
  */
-public class JSON {
+class JSON {
 
     @NotNull
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -17,7 +17,10 @@ public class JSON {
     @NotNull
     private String json;
 
-    private JSON(@NotNull String json) {
+    /**
+     * Use {@link #valueOf(String)}.
+     */
+    private JSON(@NotNull final String json) {
         this.json = json;
     }
 
@@ -28,18 +31,10 @@ public class JSON {
      * @return New instance from clazz. Not null.
      */
     @NotNull
-    public <T> T to(@NotNull Class<T> clazz) throws IOException {
+    <T> T to(@NotNull final Class<T> clazz) throws IOException {
         Preconditions.checkNotNull(clazz, "clazz must not be null.");
 
         return JSON.MAPPER.readValue(json, clazz);
-    }
-
-    /**
-     * Returns String in JSON format
-     */
-    @NotNull
-    public String asString() {
-        return this.json;
     }
 
     /**
@@ -49,7 +44,7 @@ public class JSON {
      * @return new instance.
      */
     @NotNull
-    public synchronized static JSON valueOf(@NotNull String json) throws IOException {
+    synchronized static JSON valueOf(@NotNull final String json) throws IOException {
         Preconditions.checkNotNull(json, "json must not be null.");
 
         return new JSON(json);
@@ -63,7 +58,7 @@ public class JSON {
      * @return String with JSON format. Not null.
      */
     @NotNull
-    public synchronized static String format(@NotNull Object obj) throws IOException {
+    synchronized static String format(@NotNull final Object obj) throws IOException {
         Preconditions.checkNotNull(obj, "obj must not be null.");
 
         return MAPPER.writeValueAsString(obj);

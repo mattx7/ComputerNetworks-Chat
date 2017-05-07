@@ -56,7 +56,7 @@ class ServerEntity {
      *
      * @param port server port. Not null.
      */
-    ServerEntity(@NotNull Integer port) {
+    ServerEntity(@NotNull final Integer port) {
         Preconditions.checkNotNull(port, "port must not be null.");
 
         this.port = port;
@@ -99,7 +99,7 @@ class ServerEntity {
      *
      * @param name Name of the room. Not null.
      */
-    synchronized void addRoom(@NotNull String name) {
+    synchronized void addRoom(@NotNull final String name) {
         Preconditions.checkNotNull(name, "name must not be null.");
 
         this.chatRooms.add(new ChatRoom(this, name));
@@ -113,10 +113,10 @@ class ServerEntity {
      * @throws ChatRoomNotFoundException If no room with given name exists.
      */
     @NotNull
-    synchronized ChatRoom getRoomByName(@NotNull String name) throws ChatRoomNotFoundException {
+    synchronized ChatRoom getRoomByName(@NotNull final String name) throws ChatRoomNotFoundException {
         Preconditions.checkNotNull(name, "name must not be null.");
 
-        for (ChatRoom room : chatRooms) {
+        for (final ChatRoom room : chatRooms) {
             if (room.getName().equalsIgnoreCase(name)) {
                 return room;
             }
@@ -147,14 +147,13 @@ class ServerEntity {
         LOG.debug("Close all connections...");
         try {
             serverSocket.close();
-            for (ChatRoom chatRoom : chatRooms) {
-                for (ConnectedClient client : chatRoom.getClients()) {
+            for (final ChatRoom chatRoom : chatRooms) {
+                for (final ConnectedClient client : chatRoom.getClients()) {
                     client.disconnect();
                 }
             }
 
         } catch (final Exception ignored) {
-
         }
         LOG.debug("All connections closed!");
     }

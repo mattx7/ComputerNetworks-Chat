@@ -1,7 +1,8 @@
 package chat_app.client;
 
-import chat_app.message.ChatMessage;
+import chat_app.transfer_object.Message;
 import chat_app.utility.Connection;
+import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,67 +22,61 @@ class ClientEntity {
     Connection connection;
 
     /**
-     * IP or address to the server
-     */
-    private String serverAddress;
-
-    /**
      * Name of the user.
      */
     private String username;
 
     /**
-     * Holds the port.
-     */
-    private int port;
-
-    /**
      * Constructor.
      *
-     * @param serverAddress Not null.
-     * @param username      Not null.
-     * @param port          Not null.
+     * @param username Not null.
      */
-    ClientEntity(@NotNull String serverAddress, @NotNull String username, int port) {
-        this.serverAddress = serverAddress;
+    ClientEntity(@NotNull final String username) {
+        Preconditions.checkNotNull(username, "username must not be null.");
+
         this.username = username;
-        this.port = port;
     }
 
     /**
      * Starts the connection to the server
      *
+     * @param address IP or URL to the server. Not null.
+     * @param port    Port number. Not null.
      * @throws ServerNotFoundException If connection gets refused.
      */
-    void connect() throws ServerNotFoundException {
+    void connect(@NotNull final String address,
+                 @NotNull final Integer port) throws ServerNotFoundException {
+        Preconditions.checkNotNull(address, "address must not be null.");
+        Preconditions.checkNotNull(port, "port must not be null.");
 
-        // Connect
+        // Try to connect
         try {
-            connection = Connection.to(serverAddress, port);
+            connection = Connection.to(address, port);
             LOG.info("Connection accepted " + connection.getServerAddress() + ":" + connection.getPort());
         } catch (final IOException e) {
             connection.kill();
             throw new ServerNotFoundException();
         }
 
-        // Receives messages format server
+        // Receives messages from server
         new ServerListener(this).start();
 
-        // Send our username to the server
+        // Send username to the server
         try {
             connection.send(username);
         } catch (IOException eIO) {
             connection.kill();
         }
-
     }
 
     /**
-     * To send message to serverAddress.
+     * To send transfer_object to serverAddress.
      *
      * @param message Not null.
      */
-    void sendMessage(@NotNull ChatMessage message) {
+    void sendMessage(@NotNull final Message message) {
+        Preconditions.checkNotNull(message, "message must not be null.");
+
         try {
             connection.send(message);
         } catch (IOException e) {
@@ -92,18 +87,22 @@ class ClientEntity {
     /**
      * To display in terminal
      *
-     * @param message  Not null.
+     * @param message Not null.
      */
-    void display(@NotNull String message) {
+    void display(@NotNull final String message) {
+        Preconditions.checkNotNull(message, "message must not be null.");
+
         System.out.println(message);
     }
 
     /**
      * To display in terminal
      *
-     * @param chatMessage  Not null.
+     * @param message Not null.
      */
-    void display(@NotNull ChatMessage chatMessage) {
-        System.out.println(chatMessage.getMessage());
+    void display(@NotNull final Message message) {
+        Preconditions.checkNotNull(message, "message must not be null.");
+
+        System.out.println(message.getPayload());
     }
 }

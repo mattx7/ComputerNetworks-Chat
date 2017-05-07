@@ -43,7 +43,7 @@ class ChatRoom {
      * @param server Reference to the sever instance. Not null.
      * @param name Name of the chat room. Not null.
      */
-    ChatRoom(@NotNull ServerEntity server, @NotNull String name) {
+    ChatRoom(@NotNull final ServerEntity server, @NotNull final String name) {
         Preconditions.checkNotNull(server, "server must not be null.");
         Preconditions.checkNotNull(name, "name must not be null.");
 
@@ -66,7 +66,7 @@ class ChatRoom {
      *
      * @param connectedClient Connection to the client. Not null.
      */
-    synchronized void enterChatRoom(@NotNull ConnectedClient connectedClient) {
+    synchronized void enterChatRoom(@NotNull final ConnectedClient connectedClient) {
         Preconditions.checkNotNull(connectedClient, "connectedClient must not be null.");
 
         LOG.debug("Client enters the room " + name);
@@ -80,7 +80,7 @@ class ChatRoom {
      *
      * @param connection Connection to the client. Not null.
      */
-    synchronized void enterChatRoom(@NotNull Connection connection) {
+    synchronized void enterChatRoom(@NotNull final Connection connection) {
         Preconditions.checkNotNull(connection, "socket must not be null.");
 
         final ConnectedClient connectedClient = new ConnectedClient(server, this, connection);
@@ -89,14 +89,14 @@ class ChatRoom {
     }
 
     /**
-     * To distribute a message to all Clients
+     * To distribute a transfer_object to all Clients
      *
      * @param message Not null.
      */
-    synchronized void distributeMessage(@NotNull String message) {
-        Preconditions.checkNotNull(message, "message must not be null.");
+    synchronized void distributeMessage(@NotNull final String message) {
+        Preconditions.checkNotNull(message, "transfer_object must not be null.");
 
-        // add HH:mm:ss and \n to the message
+        // add HH:mm:ss and \n to the transfer_object
         String time = dateFormatter.format(new Date());
         String messageFormatted = time + " " + message;
         LOG.debug("Room[" + name + "] <<< " + messageFormatted);
@@ -115,11 +115,11 @@ class ChatRoom {
     }
 
     /**
-     * For a client who logoff using the LOGOUT message
+     * For a client who logoff using the LOGOUT transfer_object
      *
      * @param id From Client. Not null.
      */
-    synchronized void removeClientFromRoom(@NotNull Integer id) {
+    synchronized void removeClientFromRoom(@NotNull final Integer id) {
         Preconditions.checkNotNull(id, "id must not be null.");
 
         // scan the array list until we found the Id
