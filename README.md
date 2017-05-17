@@ -2,6 +2,15 @@
 
 This application is a small chat that runs in the shell. It consists of two separate parts, a client and a server. It is to consider that the server has to run before the chat.
 
+# Contents:
+1.Getting started
+  1.a Server
+  1.b Client
+2. Specifications
+  2.a For user
+  2.b For devs
+3. Datamodel
+
 ## Getting started
 
 The JAR can be build with the Gradle-Task "fatJar". This will create a ChatApp.jar in the build/libs directory.
