@@ -1,6 +1,5 @@
 package chat_app.client;
 
-import chat_app.transfer_object.Message;
 import chat_app.utility.Connection;
 import com.google.common.base.Preconditions;
 import org.apache.log4j.Logger;
@@ -70,11 +69,11 @@ class ClientEntity {
     }
 
     /**
-     * To send transfer_object to serverAddress.
+     * To send transfer_object to server.
      *
      * @param message Not null.
      */
-    void sendMessage(@NotNull final Message message) {
+    void sendMessage(@NotNull final String message) {
         Preconditions.checkNotNull(message, "message must not be null.");
 
         try {
@@ -95,14 +94,4 @@ class ClientEntity {
         System.out.println(message);
     }
 
-    /**
-     * To display in terminal
-     *
-     * @param message Not null.
-     */
-    void display(@NotNull final Message message) {
-        Preconditions.checkNotNull(message, "message must not be null.");
-
-        System.out.println(message.getPayload());
-    }
 }

@@ -1,7 +1,5 @@
 package chat_app.client;
 
-import chat_app.transfer_object.Message;
-import chat_app.transfer_object.MessageType;
 import org.apache.log4j.Logger;
 
 import java.util.Scanner;
@@ -33,8 +31,6 @@ public class ClientMain {
         String userName = "Anonymous";
 
         switch (args.length) {
-            case 3:
-                address = args[2];
             case 2:
                 try {
                     portNumber = Integer.parseInt(args[1]);
@@ -44,7 +40,7 @@ public class ClientMain {
                     return;
                 }
             case 1:
-                userName = args[0];
+                address = args[0];;
             case 0:
                 break;
             default:
@@ -68,42 +64,14 @@ public class ClientMain {
                 System.out.print("> ");
                 String msg = scan.nextLine();
 
-                final String[] msgInWords = msg.split(" ");
-                String command = "";
-                String nameOfRoom = "";
-                if (msgInWords.length == 2) {
-                    command = (msgInWords[0]);
-                    nameOfRoom = (msgInWords[1]);
-                }
+                client.sendMessage(msg);
 
-                if (msg.equalsIgnoreCase("LOGOUT")) {
-                    client.sendMessage(new Message(MessageType.LOGOUT));
-                    break;
-
-                } else if (msg.equalsIgnoreCase("WHOISIN")) {
-                    client.sendMessage(new Message(MessageType.WHO_IS_IN));
-
-                } else if (command.equalsIgnoreCase("SWITCH")) {
-                    client.sendMessage(new Message(MessageType.SWITCH_ROOM, nameOfRoom));
-
-                } else if (command.equalsIgnoreCase("CREATE")) {
-                    client.sendMessage(new Message(MessageType.CREATE_ROOM, nameOfRoom));
-
-                } else if (msg.equalsIgnoreCase("HELP")) {
-                    client.sendMessage(new Message(MessageType.HELP));
-
-                } else if (msg.equalsIgnoreCase("AVAILABLE")) {
-                    client.sendMessage(new Message(MessageType.AVAILABLE_ROOMS));
-
-                } else {
-                    client.sendMessage(new Message(MessageType.MESSAGE, msg));
-                }
             }
         }
     }
 
     public static void usage() {
-        System.out.println("ClientEntity usage: > java Client [username] [port] [address]");
+        System.out.println("ClientEntity usage: > java Client [address] [port]");
     }
 
 }
